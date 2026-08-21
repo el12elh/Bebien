@@ -33,8 +33,6 @@ require_once __DIR__ . '/includes/public_nav.php';
           <p>
             Sont autorisés à participer au tournoi les joueurs et joueuses
             né(e)s de <strong><?= $anneeNaissanceMin ?></strong> à <strong><?= $anneeNaissanceMax ?></strong>.
-          </p>
-          <p>
             Le joueur qui ne pourra présenter sa licence ne sera pas autorisé
             à participer au tournoi.
           </p>
@@ -61,7 +59,7 @@ require_once __DIR__ . '/includes/public_nav.php';
           <ul>
           <li>
           <p>
-            CARTON JAUNE :
+            <strong>Carton jaune</strong> <icon class="card-icon card-icon-yellow"></icon> :
               Tout joueur écopant d'un carton jaune sera exclu pendant
               <strong>deux minutes</strong>. Il sera alors remplacé.
               Pour un même joueur, un deuxième carton jaune équivaudra à la sanction
@@ -71,8 +69,8 @@ require_once __DIR__ . '/includes/public_nav.php';
           </li>
           <li>
             <p>
-              CARTON ROUGE :
-              Tout joueur écopant d'un carton rouge sera exclu définitivementdu du match en cours. 
+              <strong>Carton rouge</strong> <icon class="card-icon card-icon-red"></icon> :
+              Tout joueur écopant d'un carton rouge sera exclu <strong>définitivement</strong> du match en cours. 
               Le joueur sera alors remplacé. La Commission de discipline se donne la possibilité d'exclure définitivement
               le joueur ou l'éducateur du tournoi après examen du dossier.
             </p>
@@ -113,7 +111,7 @@ require_once __DIR__ . '/includes/public_nav.php';
             Règle normale Rugby Digest.
           </p>
 
-          <h6>TRANSFORMATIONS</h6>
+          <h6><strong>TRANSFORMATTIONS</strong></h6>
           <p>
             Aucune.
           </p>
@@ -123,7 +121,7 @@ require_once __DIR__ . '/includes/public_nav.php';
             <li><strong>Victoire :</strong> 4 points</li>
             <li><strong>Nul :</strong> 2 points</li>
             <li><strong>Défaite :</strong> 0 point</li>
-            <li><strong>Abandon du terrain :</strong> -2 points</li>
+            <li><s><strong>Abandon du terrain :</strong> -2 points</s></li>
           </ul>
 
           <h6><strong>ARBITRAGE</strong></h6>
