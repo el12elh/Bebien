@@ -5,8 +5,10 @@ $pdo = db();
 
 $fields = [
     'nom_tournoi' => 'Nom du tournoi',
+    'edition_tournoi' => 'Édition du tournoi (ex: 26)',
     'date_tournoi' => 'Date du tournoi (YYYY-MM-DD)',
     'lieu_tournoi' => 'Lieu du tournoi',
+    'ville_tournoi' => 'Ville du tournoi',
     'points_victoire' => 'Points pour une victoire',
     'points_nul' => 'Points pour un match nul',
     'points_defaite' => 'Points pour une défaite',

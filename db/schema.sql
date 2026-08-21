@@ -143,16 +143,15 @@ INSERT INTO settings (k, v) VALUES
   ('duree_periode_minutes', '7'),
   ('nb_mi_temps', '2'),
   ('pause_entre_matchs_minutes', '3'),
-  ('heure_debut_matin', '09:30'),
-  ('heure_debut_aprem', '13:30'),
-  ('nom_tournoi', 'Challenge Bébien 2026'),
-  ('lieu_tournoi', 'Complexe Stade Pierre Albaladéjo'),
+  ('heure_debut_matin', '10:00'),
+  ('heure_debut_aprem', '14:00'),
+  ('nom_tournoi', 'Challenge Robert Bébien'),
+  ('edition_tournoi', '26'),
+  ('lieu_tournoi', 'Stade Pierre Albaladéjo'),
+  ('ville_tournoi', 'Joué-lès-Tours')
   ('date_tournoi', '2026-10-18'),
   ('logo_tournoi_path', 'uploads/logo_tournoi.png')
 ON DUPLICATE KEY UPDATE v = v;
-
--- Terrains par défaut (modifiable ensuite)
-INSERT INTO fields (nom) VALUES ('Terrain 1'), ('Terrain 2');
 
 -- Catégories par défaut
 INSERT INTO categories (nom) VALUES ('M8'), ('M10'), ('M12');

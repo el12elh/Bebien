@@ -69,6 +69,17 @@ if ($dateTournoi) {
         $phase = 'matin';
     }
 }
+$dateTournoi_formatted = $dateTournoi
+    ? (new IntlDateFormatter(
+        'fr_FR',
+        IntlDateFormatter::LONG,
+        IntlDateFormatter::NONE
+    ))->format(new DateTime($dateTournoi))
+    : '';
+$nomTournoi = getSetting('nom_tournoi');
+$numeroEdition = getSetting('edition_tournoi');
+$lieuTournoi = getSetting('lieu_tournoi');
+$villeTournoi = getSetting('ville_tournoi');
 
 $pageTitle = 'Accueil';
 require_once __DIR__ . '/includes/head.php';
@@ -77,7 +88,13 @@ require_once __DIR__ . '/includes/public_nav.php';
 <div class="container">
   <?php require_once __DIR__ . '/includes/sponsor_strip.php'; ?>
   <div class="text-center my-4">
-    <p class="text-muted">Suivez les résultats et classements en direct.</p>
+  <p>
+      Bienvenue sur l'interface web de la
+      <strong><?= $numeroEdition ?><sup>e</sup></strong>
+      édition du <strong><?= $nomTournoi ?></strong>,
+      qui aura lieu le <strong><?= $dateTournoi_formatted ?></strong> au <strong><?= $lieuTournoi ?></strong> à <strong><?= $villeTournoi ?></strong>.
+  </p>
+  <p class="text-muted">Suivi les résultats et classements en direct ici.</p>
     <div class="d-flex justify-content-center gap-2 flex-wrap">
       <?php foreach ($categories as $c): ?>
         <a href="schedule?category_id=<?= $c['id'] ?>&phase=<?= $phase ?>" class="btn btn-outline-success"><?= htmlspecialchars($c['nom']) ?></a>
