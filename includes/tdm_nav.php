@@ -15,8 +15,9 @@ $user = currentUser();
         <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
         <li class="nav-item"><a class="nav-link" href="/schedule">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link" href="/standings">Classements</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='rules'?'active':'' ?>" href="/rules">Règlement</a></li>
         <li class="nav-item"><a class="nav-link" href="/sponsors">Sponsors</a></li>
-        <li class="nav-item"><a class="nav-link" href="/contact">Contact
+        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
       </ul>
       <span class="navbar-text text-white me-3 small"><?= htmlspecialchars($user['nom_affichage'] ?? $user['username'] ?? '') ?></span>
       <?php if (($user['role'] ?? '') === 'admin'): ?>
