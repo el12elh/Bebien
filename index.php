@@ -167,7 +167,9 @@ require_once __DIR__ . '/includes/public_nav.php';
                 </div>
               </div>
               <div class="text-end mt-1">
-              <span class="badge badge-status-<?= $m['status'] ?>"><?= $m['status'] ?></span>
+              <div class="d-flex justify-content-between align-items-center gap-2 mt-2">
+                <span class="badge badge-status-<?= $m['status'] ?>"><?= $m['status'] ?></span>
+              </div>
             </div>
             </div>
           </div>

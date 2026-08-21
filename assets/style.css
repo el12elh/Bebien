@@ -126,9 +126,13 @@ body { background: var(--site-surface); color: var(--site-text); }
 }
 .badge-status-Programmé,
 .badge-status-Scheduled{
-  background: var(--site-muted);
+  background: #60A5FA;
   color: #fff;
 }
+.card-match.Programmé {
+  border-left-color: #60A5FA;
+}
+
 .badge-status-live,
 .badge-status-Live {
   background: var(--site-accent);
