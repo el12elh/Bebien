@@ -265,7 +265,7 @@ require_once __DIR__ . '/../includes/tdm_nav.php';
 
     <div class="d-grid gap-2">
       <button
-          type="submit" name="status" value="Terminé" id="finishMatchBtn" class="btn btn-success big-btn"
+          type="submit" name="status" value="Terminé" id="finishMatchBtn" class="btn btn-success"
           data-team1="<?= htmlspecialchars(trim($m['c1'] . $m['e1'])) ?>"
           data-team2="<?= htmlspecialchars(trim($m['c2'] . $m['e2'])) ?>"
           >
