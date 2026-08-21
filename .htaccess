@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Redirect .php URLs to extensionless URLs
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?]
+RewriteRule ^(.+)\.php$ /$1 [R=301,L]
+
+# Internally serve .php files
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
