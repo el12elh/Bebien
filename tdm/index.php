@@ -28,13 +28,13 @@ $sql = 'SELECT m.*, c.nom cat_nom, p.nom pool_nom, f.nom field_nom,
           FROM teams
           GROUP BY club_id, category_id
         ) club_team_counts2 ON club_team_counts2.club_id = t2.club_id AND club_team_counts2.category_id = t2.category_id
-        ';
+        WHERE m.status != "Terminé"';
 $params = [];
 if (!empty($user['field_id'])) {
     $sql .= ' AND m.field_id = ?';
     $params[] = $user['field_id'];
 }
-$sql .= ' ORDER BY CASE WHEN m.status = "Live" THEN "En cours" ELSE m.status END, m.scheduled_at, m.id';
+$sql .= ' ORDER BY m.scheduled_at, m.id';
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $matches = $stmt->fetchAll();
