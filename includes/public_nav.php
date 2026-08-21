@@ -25,6 +25,7 @@ $navQuery = $navQuery !== '' ? '?' . $navQuery : '';
         <li class="nav-item"><a class="nav-link <?= $currentPage==='schedule'?'active':'' ?>" href="schedule<?= $navQuery ?>">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='standings'?'active':'' ?>" href="standings<?= $navQuery ?>">Classements</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='sponsors'?'active':'' ?>" href="sponsors">Sponsors</a></li>
+                <li class="nav-item"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="contact">Contact</a></li>
       </ul>
         <?php if ($user): ?>
             <span class="navbar-text text-white me-3 small"><?= htmlspecialchars($user['nom_affichage'] ?? $user['username'] ?? '') ?></span>

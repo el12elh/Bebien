@@ -148,7 +148,7 @@ INSERT INTO settings (k, v) VALUES
   ('nom_tournoi', 'Challenge Bébien 2026'),
   ('lieu_tournoi', 'Complexe Stade Pierre Albaladéjo'),
   ('date_tournoi', '2026-10-18'),
-  ('logo_tournoi_path', 'uploads/logo_tournoi.png');
+  ('logo_tournoi_path', 'uploads/logo_tournoi.png')
 ON DUPLICATE KEY UPDATE v = v;
 
 -- Terrains par défaut (modifiable ensuite)
