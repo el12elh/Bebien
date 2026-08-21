@@ -18,7 +18,7 @@ body { background: var(--site-surface); color: var(--site-text); }
   color: var(--site-surface) !important;
   border-color: var(--site-primary) !important;
 }
-.btn-success:hover, .btn-success:focus, .badge.bg-success:hover, .bg-success:hover, .text-success:hover, .border-success:hover {
+.btn-success:hover, .btn-success:focus, .btn-outline-cat:hover, .btn-outline-cat:focus, .badge.bg-success:hover, .bg-success:hover, .text-success:hover, .border-success:hover {
   background-color: #1d3363 !important;
   color: var(--site-surface) !important;
   border-color: #1d3363 !important;
@@ -28,6 +28,14 @@ body { background: var(--site-surface); color: var(--site-text); }
   border-color: var(--site-primary);
 }
 .btn-outline-success:hover, .btn-outline-success:focus {
+  background: var(--site-primary);
+  color: var(--site-surface);
+}
+.btn-outline-cat {
+  color: var(--site-primary);
+  border-color: var(--site-primary);
+}
+.btn-outline-cat:hover, .btn-outline-cat:focus {
   background: var(--site-primary);
   color: var(--site-surface);
 }

@@ -97,7 +97,7 @@ require_once __DIR__ . '/includes/public_nav.php';
   <p class="text-muted">Suivi les résultats et classements en direct ici.</p>
     <div class="d-flex justify-content-center gap-2 flex-wrap">
       <?php foreach ($categories as $c): ?>
-        <a href="schedule?category_id=<?= $c['id'] ?>&phase=<?= $phase ?>" class="btn btn-outline-success"><?= htmlspecialchars($c['nom']) ?></a>
+        <a href="schedule?category_id=<?= $c['id'] ?>&phase=<?= $phase ?>" class="btn btn-outline-cat"><?= htmlspecialchars($c['nom']) ?></a>
       <?php endforeach; ?>
     </div>
   </div>
