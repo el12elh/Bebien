@@ -20,7 +20,6 @@ require_once __DIR__ . '/includes/head.php';
 require_once __DIR__ . '/includes/public_nav.php';
 ?>
 <div class="container">
-
   <h2 class="mb-3">Sponsors & Partenaires</h2>
   <p class="text-muted mb-4">Merci à nos sponsors et partenaires pour leur soutien au tournoi.</p>
 

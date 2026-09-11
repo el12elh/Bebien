@@ -335,7 +335,7 @@ if ($allFinished): ?>
           // uniquement quand une poule n'existe pas encore (sinon on ré-affiche
           // fidèlement rangs_config, la config réellement utilisée la dernière fois).
           $nbPoolsAprem = $currentCat['nb_poules_aprem'] ?? 3;
-          $nomsParDefaut = ['1 - Cup', '2 - Plat', '3 - Bowl', '4 - Shield'];
+          $nomsParDefaut = ['1 Cup', '2 Plat', '3 Bowl', '4 Shield'];
           $zone1 = (int) ceil($nbTeamsCat / 4);
           $zone2 = (int) ceil($nbTeamsCat / 4);
           $zone3 = (int) ceil($nbTeamsCat / 4);

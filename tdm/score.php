@@ -191,8 +191,8 @@ require_once __DIR__ . '/../includes/tdm_nav.php';
   </div>
   <?php if (!empty($_GET['saved'])): ?><div class="alert alert-success text-center">Score enregistré.</div><?php endif; ?>
   <p class="text-center text-muted">
-    <?= htmlspecialchars($m['cat_nom']) ?> • <?= htmlspecialchars($m['pool_nom']) ?> • 
-    <?= htmlspecialchars($m['field_nom'] ?? '') ?> <?= $m['scheduled_at'] ? '• ' . date('H:i', strtotime($m['scheduled_at'])) : '' ?>
+    <i class="bi bi-tag" aria-hidden="true"></i> <?= htmlspecialchars($m['cat_nom']) ?> <i class="bi bi-diagram-3" aria-hidden="true"></i> <?= htmlspecialchars($m['pool_nom']) ?> 
+    <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($m['field_nom'] ?? '') ?> <?= $m['scheduled_at'] ? ' <i class="bi bi-clock"></i> ' . date('H:i', strtotime($m['scheduled_at'])) : '' ?>
   </p>
 
   <div class="timer-card border rounded p-3 mb-4">

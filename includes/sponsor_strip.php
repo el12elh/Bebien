@@ -3,7 +3,6 @@ $sponsors = db()->query('SELECT * FROM sponsors WHERE actif = 1 ORDER BY niveau,
 if ($sponsors):
 ?>
 
-<h3 class="sponsors-title">Sponsors & Partenaires</h3>
 <div class="sponsor-strip">
   <div class="sponsor-track">
     <?php foreach ($sponsors as $s): ?>

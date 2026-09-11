@@ -100,6 +100,7 @@ require_once __DIR__ . '/includes/head.php';
 require_once __DIR__ . '/includes/public_nav.php';
 ?>
 <div class="container">
+  <?php require_once __DIR__ . '/includes/sponsor_strip.php'; ?>
   <div class="row justify-content-center">
     <div class="col-lg-7">
       <h2 class="mb-3">Contact</h2>

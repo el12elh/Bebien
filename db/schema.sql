@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS fields (
 CREATE TABLE IF NOT EXISTS pools (
   id INT AUTO_INCREMENT PRIMARY KEY,
   category_id INT NOT NULL,
-  nom VARCHAR(100) NOT NULL,          -- "Poule A", "1 - Cup"...
+  nom VARCHAR(100) NOT NULL,          -- "Poule A", "1 Cup"...
   phase ENUM('matin','aprem') NOT NULL DEFAULT 'matin',
   ordre_niveau INT DEFAULT 0,         -- 0 = plus haut niveau, pour trier l'affichage
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -63,8 +63,8 @@ require_once __DIR__ . '/../includes/tdm_nav.php';
         <div class="card card-match <?= $m['status'] ?>">
           <div class="card-body">
             <div class="d-flex justify-content-between small text-muted mb-1">
-              <span><?= htmlspecialchars($m['cat_nom']) ?> • <?= htmlspecialchars($m['pool_nom']) ?></span>
-              <span><?= htmlspecialchars($m['field_nom'] ?? '') ?> <?= $m['scheduled_at'] ? '• ' . date('H:i', strtotime($m['scheduled_at'])) : '' ?></span>
+              <span><i class="bi bi-tag" aria-hidden="true"></i> <?= htmlspecialchars($m['cat_nom']) ?> <i class="bi bi-diagram-3" aria-hidden="true"></i> <?= htmlspecialchars($m['pool_nom']) ?></span>
+              <span><i class="bi bi-geo-alt"></i> <?= htmlspecialchars($m['field_nom'] ?? '') ?> <?= $m['scheduled_at'] ? ' <i class="bi bi-clock"></i> ' . date('H:i', strtotime($m['scheduled_at'])) : '' ?></span>
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <div class="d-flex align-items-center gap-2">
