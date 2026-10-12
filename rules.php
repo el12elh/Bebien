@@ -9,8 +9,8 @@ if ($dateTournoi) {
 
 if ($dateTournoi) {
     $anneeTournoi = (int) (new DateTime($dateTournoi))->format('Y');
-    $anneeNaissanceMin = $anneeTournoi - 6;
-    $anneeNaissanceMax = $anneeTournoi - 1;
+    $anneeNaissanceMin = $anneeTournoi - 11;
+    $anneeNaissanceMax = $anneeTournoi - 6;
 }
 
 $pageTitle = 'Règlement';
@@ -121,7 +121,6 @@ require_once __DIR__ . '/includes/public_nav.php';
             <li><strong>Victoire :</strong> 4 points</li>
             <li><strong>Nul :</strong> 2 points</li>
             <li><strong>Défaite :</strong> 0 point</li>
-            <li><s><strong>Abandon du terrain :</strong> -2 points</s></li>
           </ul>
 
           <h6><strong>Arbitrage</strong></h6>
