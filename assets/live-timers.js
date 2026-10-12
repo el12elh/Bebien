@@ -57,4 +57,4 @@ async function syncLiveTimers() {
 
 setInterval(tickLiveTimers, 1000);
 syncLiveTimers();
-setInterval(syncLiveTimers, 1000);
+setInterval(syncLiveTimers, 30000);

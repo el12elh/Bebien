@@ -87,23 +87,26 @@ require_once __DIR__ . '/includes/public_nav.php';
 ?>
 <div class="container">
   <?php require_once __DIR__ . '/includes/sponsor_strip.php'; ?>
-  <div class="text-center my-4">
-  <p>
-      Bienvenue sur l'interface web de la
-      <strong><?= $numeroEdition ?><sup>e</sup></strong>
-      édition du <strong><?= $nomTournoi ?></strong>,
-      qui aura lieu le <strong><?= $dateTournoi_formatted ?></strong> au <strong><?= $lieuTournoi ?></strong> à <strong><?= $villeTournoi ?></strong>.
-  </p>
-  <p class="text-muted">Suivi les résultats et classements en direct ici.</p>
+  <section class="hero">
+    <h1 class="hero-title">
+      <?= htmlspecialchars($nomTournoi) ?>
+      <?php if ($numeroEdition): ?><span class="hero-edition"><?= htmlspecialchars($numeroEdition) ?><sup>e</sup> édition</span><?php endif; ?>
+    </h1>
+    <p class="hero-meta">
+      <?php if ($dateTournoi_formatted): ?><i class="bi bi-calendar-event"></i><?= htmlspecialchars($dateTournoi_formatted) ?><?php endif; ?>
+      <?php if ($lieuTournoi): ?><span class="ms-3"><i class="bi bi-geo-alt"></i><?= htmlspecialchars($lieuTournoi) ?>, <?= htmlspecialchars($villeTournoi) ?></span><?php endif; ?>
+    </p>
+    <p class="hero-hint">Suivez les résultats et les classements en direct.</p>
     <div class="d-flex justify-content-center gap-2 flex-wrap">
       <?php foreach ($categories as $c): ?>
         <a href="schedule?category_id=<?= $c['id'] ?>&phase=<?= $phase ?>" class="btn btn-outline-cat"><?= htmlspecialchars($c['nom']) ?></a>
       <?php endforeach; ?>
+      <a href="standings?view=clubs" class="btn btn-cta">Classement des clubs</a>
     </div>
-  </div>
+  </section>
 
   <?php if ($live): ?>
-  <h4>
+  <h4 class="section-title">
      Match<?= count($live) > 1 ? 's' : '' ?> en cours : <?= count($live) ?>
   </h4>
   <div class="row g-3 mb-4">
@@ -150,8 +153,7 @@ require_once __DIR__ . '/includes/public_nav.php';
       <?php endforeach; ?>
   </div>
   <?php endif; ?>
-  <br>
-  <h4>Prochains matchs</h4>
+  <h4 class="section-title">Prochains matchs</h4>
   <div class="row g-3 mb-4">
     <?php foreach ($next as $m): ?>
         <div class="col-md-3">

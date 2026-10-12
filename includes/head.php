@@ -11,6 +11,10 @@ $logoTournoiPath = ltrim((string) getSetting('logo_tournoi_path', 'uploads/logo_
 <title><?= htmlspecialchars($pageTitle ?? $nomTournoi) ?> - <?= htmlspecialchars($nomTournoi) ?></title>
 <link rel="icon" type="image/png" href="/<?= htmlspecialchars($logoTournoiPath) ?>">
 <link rel="apple-touch-icon" href="/<?= htmlspecialchars($logoTournoiPath) ?>">
+<meta name="theme-color" content="#213b70">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link href="/assets/style.css" rel="stylesheet">

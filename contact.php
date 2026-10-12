@@ -29,7 +29,7 @@ function sendContactMessage(string $toEmail, array $values): bool {
     }
 
     $fromName = 'Bébien';
-    $fromEmail = 'contact@bebien.feuzanderie.fr';
+    $fromEmail = 'no-reply@bebien.jouerugby.fr';
     $replyToEmail = contactHeaderValue($values['email']);
     $replyToName = contactHeaderValue($values['name']);
     $subject = contactHeaderValue($values['subject']);
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         $toEmail = trim((string) getSetting('contact_email', ''));
         if ($toEmail === '') {
-            $toEmail = 'contact@bebien.feuzanderie.fr';
+            $toEmail = 'educ.sportif@jouerugby.fr';
         }
         if (sendContactMessage($toEmail, $values)) {
             $message = 'Votre message a bien été envoyé.';

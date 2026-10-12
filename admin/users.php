@@ -23,7 +23,7 @@ function sendPasswordSetupEmail(string $email, string $token, string $displayNam
     $body .= "Cordialement,\nL'équipe Bébien\n";
 
     $fromName = 'Bébien';
-    $fromEmail = 'contact@bebien.feuzanderie.fr';
+    $fromEmail = 'no-reply@bebien.jouerugby.fr';
     $adminEmails = db()
         ->query("SELECT username FROM users WHERE role = 'admin' AND actif = 1")
         ->fetchAll(PDO::FETCH_COLUMN);

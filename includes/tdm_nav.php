@@ -1,5 +1,5 @@
 <?php
-$currentPage = basename($_SERVER['SCRIPT_NAME']);
+$currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
 $user = currentUser();
 ?>
 <nav class="navbar navbar-expand-lg navbar-rugby mb-4">
@@ -16,7 +16,7 @@ $user = currentUser();
         <li class="nav-item"><a class="nav-link" href="/schedule">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link" href="/standings">Classements</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='rules'?'active':'' ?>" href="/rules">Règlement</a></li>
-        <li class="nav-item"><a class="nav-link" href="/sponsors">Sponsors</a></li>
+        <li class="nav-item"><a class="nav-link" href="/sponsors">Partenaires</a></li>
         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
       </ul>
       <span class="navbar-text text-white me-3 small"><?= htmlspecialchars($user['nom_affichage'] ?? $user['username'] ?? '') ?></span>

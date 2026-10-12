@@ -238,9 +238,8 @@ function planifierMatchs(?int $categoryId, string $phase): void {
     $fieldIds = array_column($fields, 'id');
     if (!$fieldIds) throw new Exception('Aucun terrain actif configuré pour cette catégorie.');
 
-    $dureeMatch = (int) getSetting('duree_match_minutes', 12);
-    $pause = (int) getSetting('pause_entre_matchs_minutes', 3);
-    $slotMinutes = $dureeMatch + $pause;
+    // La durée d'un créneau dépend de la catégorie :
+    // nb de mi-temps x durée d'une mi-temps + pause entre deux matchs.
     $heureDebut = $phase === 'matin' ? getSetting('heure_debut_matin', '09:00') : getSetting('heure_debut_aprem', '13:30');
 
     $date_tournoi = getSetting('date_tournoi', date('Y-m-d'));
@@ -274,6 +273,7 @@ function planifierMatchs(?int $categoryId, string $phase): void {
         $categoryName = $categoryNames[$categoryIdForGroup] ?? '';
 
         $slotIndex = $slotIndexByCategory[$categoryIdForGroup] ?? 0;
+        $slotMinutes = getCategoryTiming($categoryIdForGroup)['creneau'];
         $batchSize = count($fieldIds);
         $batches = array_chunk($matchIds, $batchSize);
 
@@ -325,6 +325,7 @@ function classementPoule(int $poolId): array {
         $showNomEquipe = ($clubCounts[$t['club_id']] ?? 0) > 1;
         $stats[$t['id']] = [
             'team_id' => $t['id'],
+            'club_id' => (int) $t['club_id'],
             'nom_equipe' => $showNomEquipe ? $t['nom_equipe'] : '',
             'nom_club' => $t['nom_club'],
             'logo_path' => $t['logo_path'] ?? null,
@@ -765,4 +766,194 @@ function classementGeneral(int $categoryId, string $phase): array {
     }
 
     return $liste;
+}
+
+/**
+ * ============================================================
+ *  CLASSEMENT FINAL DES CLUBS (toutes catégories, après-midi)
+ * ============================================================
+ */
+
+/**
+ * Classement final des équipes d'une catégorie à l'issue de l'après-midi :
+ * on classe d'abord par niveau de tableau (ordre_niveau : le tableau 0 est le
+ * plus haut), puis par rang à l'intérieur du tableau.
+ * Chaque ligne = ligne de classementPoule() + 'pool_nom' + 'rang_final'.
+ */
+function classementFinalCategorie(int $categoryId): array {
+    $pdo = db();
+    $stmt = $pdo->prepare("SELECT id, nom FROM pools WHERE category_id = ? AND phase = 'aprem' ORDER BY ordre_niveau, id");
+    $stmt->execute([$categoryId]);
+
+    $rows = [];
+    foreach ($stmt->fetchAll() as $pool) {
+        foreach (classementPoule((int) $pool['id']) as $row) {
+            $row['pool_nom'] = $pool['nom'];
+            $rows[] = $row;
+        }
+    }
+    foreach ($rows as $i => &$row) {
+        $row['rang_final'] = $i + 1;
+    }
+    unset($row);
+
+    return $rows;
+}
+
+/**
+ * Classement final des clubs, toutes catégories confondues, basé sur les
+ * résultats de l'après-midi.
+ *
+ * Méthode (réglage « classement_final_mode ») :
+ *  - 'rang'   (défaut) : une équipe rapporte (nb d'équipes classées - rang final + 1)
+ *                         points dans sa catégorie, multipliés par le coefficient de la catégorie.
+ *  - 'points' : une équipe rapporte ses points de classement de l'après-midi,
+ *                multipliés par le coefficient de la catégorie.
+ * Les points de toutes les équipes d'un même club sont additionnés.
+ * Départage : essais marqués l'après-midi, puis nom du club.
+ *
+ * Une catégorie ne compte qu'à partir du premier match terminé de l'après-midi.
+ *
+ * Retourne ['clubs' => [...], 'categories' => [id => [...]], 'mode' => string, 'complete' => bool].
+ */
+function classementFinalClubs(): array {
+    $pdo = db();
+    $mode = getSetting('classement_final_mode', 'rang') === 'points' ? 'points' : 'rang';
+
+    $categories = [];
+    $clubs = [];
+    $complete = true;
+
+    $countStmt = $pdo->prepare("SELECT COUNT(*) AS total, SUM(status = 'Terminé') AS done FROM matches WHERE category_id = ? AND phase = 'aprem'");
+
+    foreach ($pdo->query('SELECT id, nom FROM categories ORDER BY id')->fetchAll() as $cat) {
+        $categoryId = (int) $cat['id'];
+        $coef = getCategoryTiming($categoryId)['coef'];
+
+        $countStmt->execute([$categoryId]);
+        $counts = $countStmt->fetch();
+        $total = (int) ($counts['total'] ?? 0);
+        $done = (int) ($counts['done'] ?? 0);
+
+        $categories[$categoryId] = [
+            'id' => $categoryId,
+            'nom' => $cat['nom'],
+            'coef' => $coef,
+            'matchs_total' => $total,
+            'matchs_termines' => $done,
+        ];
+        if ($total === 0 || $done < $total) {
+            $complete = false;
+        }
+        if ($done === 0) {
+            continue;
+        }
+
+        $ranking = classementFinalCategorie($categoryId);
+        $nbClassees = count($ranking);
+        foreach ($ranking as $row) {
+            $clubId = (int) $row['club_id'];
+            if (!isset($clubs[$clubId])) {
+                $clubs[$clubId] = [
+                    'club_id' => $clubId,
+                    'nom_club' => $row['nom_club'],
+                    'logo_path' => $row['logo_path'],
+                    'total' => 0,
+                    'essais' => 0,
+                    'par_categorie' => [],
+                ];
+            }
+            $base = $mode === 'points' ? (float) $row['points'] : ($nbClassees - $row['rang_final'] + 1);
+            $pts = $base * $coef;
+            $clubs[$clubId]['total'] += $pts;
+            $clubs[$clubId]['essais'] += (int) $row['pts_pour'];
+            $clubs[$clubId]['par_categorie'][$categoryId] = ($clubs[$clubId]['par_categorie'][$categoryId] ?? 0) + $pts;
+        }
+    }
+
+    $liste = array_values($clubs);
+    usort($liste, function ($a, $b) {
+        return [$b['total'], $b['essais'], $a['nom_club']] <=> [$a['total'], $a['essais'], $b['nom_club']];
+    });
+
+    // Rang "à la compétition" : deux clubs strictement à égalité partagent le même rang
+    foreach ($liste as $i => &$row) {
+        if ($i > 0 && $row['total'] == $liste[$i - 1]['total'] && $row['essais'] == $liste[$i - 1]['essais']) {
+            $row['rang'] = $liste[$i - 1]['rang'];
+        } else {
+            $row['rang'] = $i + 1;
+        }
+    }
+    unset($row);
+
+    return ['clubs' => $liste, 'categories' => $categories, 'mode' => $mode, 'complete' => $complete];
+}
+
+/**
+ * Classement « serial marqueur » : clubs triés par nombre d'essais marqués
+ * (score des matchs terminés, matin + après-midi, toutes catégories confondues).
+ * Comme il n'y a pas de transformations, le score d'un match = nombre d'essais.
+ *
+ * Retourne ['clubs' => [...], 'categories' => [id => nom]].
+ */
+function classementSerialMarqueur(): array {
+    $pdo = db();
+
+    $categories = [];
+    foreach ($pdo->query('SELECT id, nom FROM categories ORDER BY id')->fetchAll() as $cat) {
+        $categories[(int) $cat['id']] = $cat['nom'];
+    }
+
+    $clubNames = [];
+    foreach ($pdo->query('SELECT id, nom_club, logo_path FROM clubs')->fetchAll() as $club) {
+        $clubNames[(int) $club['id']] = $club;
+    }
+
+    $stmt = $pdo->query("SELECT m.category_id, t1.club_id AS club1, t2.club_id AS club2, m.score1, m.score2
+                         FROM matches m
+                         JOIN teams t1 ON t1.id = m.team1_id
+                         JOIN teams t2 ON t2.id = m.team2_id
+                         WHERE m.status = 'Terminé'");
+
+    $clubs = [];
+    $add = function (int $clubId, int $categoryId, int $marques) use (&$clubs, $clubNames) {
+        if (!isset($clubNames[$clubId])) {
+            return;
+        }
+        if (!isset($clubs[$clubId])) {
+            $clubs[$clubId] = [
+                'club_id' => $clubId,
+                'nom_club' => $clubNames[$clubId]['nom_club'],
+                'logo_path' => $clubNames[$clubId]['logo_path'],
+                'essais' => 0,
+                'matchs' => 0,
+                'par_categorie' => [],
+            ];
+        }
+        $clubs[$clubId]['essais'] += $marques;
+        $clubs[$clubId]['matchs']++;
+        $clubs[$clubId]['par_categorie'][$categoryId] = ($clubs[$clubId]['par_categorie'][$categoryId] ?? 0) + $marques;
+    };
+
+    foreach ($stmt->fetchAll() as $m) {
+        $add((int) $m['club1'], (int) $m['category_id'], (int) $m['score1']);
+        $add((int) $m['club2'], (int) $m['category_id'], (int) $m['score2']);
+    }
+
+    $liste = array_values($clubs);
+    // Plus d'essais d'abord ; à égalité, moins de matchs joués (meilleure moyenne), puis nom
+    usort($liste, function ($a, $b) {
+        return [$b['essais'], $a['matchs'], $a['nom_club']] <=> [$a['essais'], $b['matchs'], $b['nom_club']];
+    });
+
+    foreach ($liste as $i => &$row) {
+        if ($i > 0 && $row['essais'] === $liste[$i - 1]['essais'] && $row['matchs'] === $liste[$i - 1]['matchs']) {
+            $row['rang'] = $liste[$i - 1]['rang'];
+        } else {
+            $row['rang'] = $i + 1;
+        }
+    }
+    unset($row);
+
+    return ['clubs' => $liste, 'categories' => $categories];
 }

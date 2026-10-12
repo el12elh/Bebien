@@ -32,18 +32,15 @@ function renderLiveMatchTimer(array $match): void
     }
 
     $timer = getMatchTimerState($match);
-    $isM8 = strtoupper((string) ($match['cat_nom'] ?? '')) === 'M8';
-    $period = max(1, (int) ($match['timer_period'] ?? 1));
-    $periodSuffix = match ($period) {
-        1 => 'st',
-        2 => 'nd',
-        3 => 'rd',
-        default => 'th',
-    };
+    $timing = getCategoryTiming((int) ($match['category_id'] ?? 0));
+    $totalPeriods = $timing['nb_mi_temps'];
+    $period = min($totalPeriods, max(1, (int) ($match['timer_period'] ?? 1)));
+    $periodLabel = $period === 1 ? '1re' : $period . 'e';
+    $periodNoun = $totalPeriods === 2 ? 'mi-temps' : 'période';
     $classes = 'live-timer' . ($timer['remaining_seconds'] === 0 ? ' live-timer-finished' : '');
     ?>
-    <?php if ($isM8): ?>
-        <span class="live-period"><?= $period ?><sup><?= $periodSuffix ?></sup> Half</span>
+    <?php if ($totalPeriods > 1): ?>
+        <span class="live-period"><?= htmlspecialchars($periodLabel . ' ' . $periodNoun) ?></span>
     <?php endif; ?>
     <span
         class="<?= $classes ?>"

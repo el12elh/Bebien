@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $fromName = 'Bébien';
             $fromEncoded = '=?UTF-8?B?'.base64_encode($fromName).'?=';
-            $headers = "From: $fromEncoded <contact@bebien.feuzanderie.fr>\r\n";
+            $headers = "From: $fromEncoded <no-reply@bebien.jouerugby.fr>\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
             $headers .= "Content-Transfer-Encoding: 8bit\r\n";

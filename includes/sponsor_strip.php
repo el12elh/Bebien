@@ -1,5 +1,5 @@
 <?php
-$sponsors = db()->query('SELECT * FROM sponsors WHERE actif = 1 ORDER BY niveau, ordre_affichage')->fetchAll();
+$sponsors = db()->query('SELECT * FROM sponsors WHERE actif = 1 ORDER BY ordre_affichage, id')->fetchAll();
 if ($sponsors):
 ?>
 

@@ -11,7 +11,15 @@ function db(): PDO {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
-            ensureUserResetColumns($pdo);
+            // Vérification du schéma une seule fois (le fichier drapeau évite les SHOW COLUMNS à chaque requête).
+            // Pour relancer les vérifications : supprimer includes/.schema_ok
+            $schemaFlag = __DIR__ . '/.schema_ok';
+            if (!is_file($schemaFlag)) {
+                ensureUserResetColumns($pdo);
+                ensureCategoryColumns($pdo);
+                ensureMatchTimerColumns($pdo);
+                @file_put_contents($schemaFlag, date('c'));
+            }
         } catch (PDOException $e) {
             http_response_code(500);
             die('Erreur de connexion à la base de données. Vérifiez config. (' . $e->getMessage() . ')');
@@ -43,6 +51,119 @@ function ensureUserResetColumns(PDO $pdo): void {
     foreach ($alterStatements as $statement) {
         $pdo->exec($statement);
     }
+}
+
+/**
+ * Paramètres de jeu propres à chaque catégorie :
+ *  - nb_mi_temps     : nombre de mi-temps / périodes
+ *  - duree_mi_temps  : durée d'une mi-temps (minutes)
+ *  - pause_minutes   : pause entre deux matchs (minutes)
+ *  - coef_classement : coefficient dans le classement final des clubs
+ *
+ * Migration automatique : les colonnes sont créées au premier chargement et
+ * pré-remplies pour reproduire le comportement précédent (M10/M12 = 1 période
+ * continue de 2x la durée configurée, M8 = nombre de mi-temps des paramètres),
+ * avec les coefficients M8 x1, M10 x2, M12 x3.
+ */
+function ensureCategoryColumns(PDO $pdo): void {
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+
+    $columns = [];
+    foreach ($pdo->query('SHOW COLUMNS FROM categories') as $row) {
+        $columns[] = $row['Field'];
+    }
+
+    $addedTiming = false;
+    $addedCoef = false;
+
+    if (!in_array('nb_mi_temps', $columns, true)) {
+        $pdo->exec('ALTER TABLE categories ADD COLUMN nb_mi_temps INT NOT NULL DEFAULT 2');
+        $addedTiming = true;
+    }
+    if (!in_array('duree_mi_temps', $columns, true)) {
+        $pdo->exec('ALTER TABLE categories ADD COLUMN duree_mi_temps INT NOT NULL DEFAULT 7');
+        $addedTiming = true;
+    }
+    if (!in_array('pause_minutes', $columns, true)) {
+        $pdo->exec('ALTER TABLE categories ADD COLUMN pause_minutes INT NOT NULL DEFAULT 3');
+        $addedTiming = true;
+    }
+    if (!in_array('coef_classement', $columns, true)) {
+        $pdo->exec('ALTER TABLE categories ADD COLUMN coef_classement INT NOT NULL DEFAULT 1');
+        $addedCoef = true;
+    }
+
+    if (!$addedTiming && !$addedCoef) {
+        return;
+    }
+
+    // Anciens paramètres globaux (lus directement : getSetting() n'est pas utilisable ici)
+    $legacy = [];
+    foreach ($pdo->query("SELECT k, v FROM settings WHERE k IN ('duree_periode_minutes','nb_mi_temps','pause_entre_matchs_minutes')") as $row) {
+        $legacy[$row['k']] = $row['v'];
+    }
+    $legacyPeriod = max(1, (int) ($legacy['duree_periode_minutes'] ?? 7));
+    $legacyHalves = max(1, (int) ($legacy['nb_mi_temps'] ?? 2));
+    $legacyPause = max(0, (int) ($legacy['pause_entre_matchs_minutes'] ?? 3));
+
+    $update = $pdo->prepare('UPDATE categories SET nb_mi_temps = ?, duree_mi_temps = ?, pause_minutes = ?, coef_classement = ? WHERE id = ?');
+    foreach ($pdo->query('SELECT id, nom, nb_mi_temps, duree_mi_temps, pause_minutes, coef_classement FROM categories')->fetchAll() as $cat) {
+        $name = strtoupper(trim((string) $cat['nom']));
+        $continuous = in_array($name, ['M10', 'M12'], true);
+
+        $nb = (int) $cat['nb_mi_temps'];
+        $duree = (int) $cat['duree_mi_temps'];
+        $pause = (int) $cat['pause_minutes'];
+        $coef = (int) $cat['coef_classement'];
+
+        if ($addedTiming) {
+            $nb = $continuous ? 1 : $legacyHalves;
+            $duree = $continuous ? $legacyPeriod * 2 : $legacyPeriod;
+            $pause = $legacyPause;
+        }
+        if ($addedCoef) {
+            $coef = $name === 'M12' ? 3 : ($name === 'M10' ? 2 : 1);
+        }
+        $update->execute([$nb, $duree, $pause, $coef, (int) $cat['id']]);
+    }
+}
+
+/**
+ * Réglages de jeu d'une catégorie (nombre de mi-temps, durées, pause, coefficient).
+ * Valeurs de repli si la catégorie est introuvable : 2 x 7 min, pause 3 min, coef 1.
+ */
+function getCategoryTiming(int $categoryId): array {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        foreach (db()->query('SELECT id, nom, nb_mi_temps, duree_mi_temps, pause_minutes, coef_classement FROM categories') as $c) {
+            $nb = max(1, (int) $c['nb_mi_temps']);
+            $duree = max(1, (int) $c['duree_mi_temps']);
+            $pause = max(0, (int) $c['pause_minutes']);
+            $cache[(int) $c['id']] = [
+                'nom' => $c['nom'],
+                'nb_mi_temps' => $nb,
+                'duree_mi_temps' => $duree,
+                'duree_match' => $nb * $duree,
+                'pause' => $pause,
+                'creneau' => $nb * $duree + $pause,
+                'coef' => max(1, (int) $c['coef_classement']),
+            ];
+        }
+    }
+    return $cache[$categoryId] ?? [
+        'nom' => '',
+        'nb_mi_temps' => 2,
+        'duree_mi_temps' => 7,
+        'duree_match' => 14,
+        'pause' => 3,
+        'creneau' => 17,
+        'coef' => 1,
+    ];
 }
 
 function ensureUserRoleEnum(PDO $pdo): void {

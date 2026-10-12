@@ -9,14 +9,12 @@ $id = (int) ($_GET['id'] ?? 0);
 
 function getTimerDurationSecondsForMatch(PDO $pdo, int $matchId): int
 {
-    $stmt = $pdo->prepare('SELECT c.nom FROM matches m JOIN categories c ON c.id=m.category_id WHERE m.id=?');
+    // Durée d'une mi-temps / période, réglée par catégorie (Admin > Catégories)
+    $stmt = $pdo->prepare('SELECT category_id FROM matches WHERE id=?');
     $stmt->execute([$matchId]);
-    $categoryName = strtoupper((string) ($stmt->fetchColumn() ?: ''));
-    $periodSeconds = max(1, (int) getSetting('duree_periode_minutes', 7) * 60);
+    $categoryId = (int) ($stmt->fetchColumn() ?: 0);
 
-    return in_array($categoryName, ['M10', 'M12'], true)
-        ? $periodSeconds * 2
-        : $periodSeconds;
+    return max(1, getCategoryTiming($categoryId)['duree_mi_temps'] * 60);
 }
 
 function isAjaxRequest(): bool
@@ -69,7 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$id]);
             $state = $stmt->fetch();
             $currentPeriod = (int) ($state['timer_period'] ?? 1);
-            $nextPeriod = min($currentPeriod + 1, max(1, (int) getSetting('nb_mi_temps', 2)));
+            $catStmt = $pdo->prepare('SELECT category_id FROM matches WHERE id=?');
+            $catStmt->execute([$id]);
+            $maxPeriods = getCategoryTiming((int) ($catStmt->fetchColumn() ?: 0))['nb_mi_temps'];
+            $nextPeriod = min($currentPeriod + 1, $maxPeriods);
             $durationSeconds = getTimerDurationSecondsForMatch($pdo, $id);
             $stmt = $pdo->prepare('UPDATE matches SET timer_status=?, timer_period=?, timer_remaining_seconds=?, timer_started_at=?, timer_overtime=?, updated_by=? WHERE id=?');
             $stmt->execute(['idle', $nextPeriod, $durationSeconds, null, 0, 'tdm:' . $user['username'], $id]);
@@ -147,14 +148,9 @@ $stmt->execute([$id]);
 $m = $stmt->fetch();
 if (!$m) { die('Match introuvable.'); }
 
-$isContinuousCategory = in_array(strtoupper((string) $m['cat_nom']), ['M10', 'M12'], true);
-$configuredPeriodSeconds = max(1, (int) getSetting('duree_periode_minutes', 7) * 60);
-$timerDurationSeconds = $isContinuousCategory
-  ? $configuredPeriodSeconds * 2
-  : $configuredPeriodSeconds;
-$totalPeriods = $isContinuousCategory
-  ? 1
-  : max(1, (int) getSetting('nb_mi_temps', 2));
+$categoryTiming = getCategoryTiming((int) $m['category_id']);
+$timerDurationSeconds = max(1, $categoryTiming['duree_mi_temps'] * 60);
+$totalPeriods = $categoryTiming['nb_mi_temps'];
 
 $timerStatus = $m['timer_status'] ?? 'idle';
 $timerPeriod = (int) ($m['timer_period'] ?? 1);
@@ -306,7 +302,11 @@ function updateTimerUI() {
   const timerAction = document.getElementById('timerAction');
   const nextPeriodBtn = document.getElementById('nextPeriodBtn');
 
-  if (periodLabel) periodLabel.textContent = 'Période ' + currentPeriod + ' / ' + TOTAL_PERIODS;
+  if (periodLabel) {
+    periodLabel.textContent = TOTAL_PERIODS > 1
+      ? (TOTAL_PERIODS === 2 ? 'Mi-temps ' : 'Période ') + currentPeriod + ' / ' + TOTAL_PERIODS
+      : 'Match';
+  }
   if (timerDisplay) {
     timerDisplay.textContent = formatTime(remainingSeconds);
     const shouldBeRed = remainingSeconds === 0 || isOvertime;

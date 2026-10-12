@@ -1,5 +1,5 @@
 <?php 
-$currentPage = basename($_SERVER['SCRIPT_NAME']);
+$currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
 $user = currentUser();
 $navPhase = isset($phase) && $phase !== '' ? $phase : ($_GET['phase'] ?? '');
 $navCategoryId = isset($categoryId) && $categoryId !== ''
@@ -21,12 +21,12 @@ $navQuery = $navQuery !== '' ? '?' . $navQuery : '';
     </button>
     <div class="collapse navbar-collapse" id="navPublic">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link <?= $currentPage==='/'?'active':'' ?>" href="/">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='index'?'active':'' ?>" href="/">Accueil</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='schedule'?'active':'' ?>" href="schedule<?= $navQuery ?>">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='standings'?'active':'' ?>" href="standings<?= $navQuery ?>">Classements</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='rules'?'active':'' ?>" href="rules">Règlement</a></li>
-        <li class="nav-item"><a class="nav-link <?= $currentPage==='sponsors'?'active':'' ?>" href="sponsors">Sponsors</a></li>
-                <li class="nav-item"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="contact">Contact</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='sponsors'?'active':'' ?>" href="sponsors">Partenaires</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="contact">Contact</a></li>
       </ul>
         <?php if ($user): ?>
             <span class="navbar-text text-white me-3 small"><?= htmlspecialchars($user['nom_affichage'] ?? $user['username'] ?? '') ?></span>
@@ -37,7 +37,7 @@ $navQuery = $navQuery !== '' ? '?' . $navQuery : '';
               <br>
             <a href="admin/signout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
         <?php else: ?>
-            <a href="/admin/signin" class="btn btn-outline-light btn-sm"></i>Admin / TdM</a></li>
+            <a href="/admin/signin" class="btn btn-outline-light btn-sm">Admin / TdM</a>
         <?php endif; ?>
 
     </div>

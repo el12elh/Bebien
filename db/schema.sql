@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS categories (
   nom VARCHAR(20) NOT NULL,          -- M8, M10, M12...
   nb_poules_matin INT DEFAULT 2,
   nb_poules_aprem INT DEFAULT 2,
+  nb_mi_temps INT NOT NULL DEFAULT 2,       -- nombre de mi-temps / périodes par match
+  duree_mi_temps INT NOT NULL DEFAULT 7,    -- durée d'une mi-temps (minutes)
+  pause_minutes INT NOT NULL DEFAULT 3,     -- pause entre deux matchs (minutes)
+  coef_classement INT NOT NULL DEFAULT 1,   -- coefficient dans le classement final des clubs
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -114,7 +118,6 @@ CREATE TABLE IF NOT EXISTS sponsors (
   nom VARCHAR(100) NOT NULL,
   logo_path VARCHAR(255) NOT NULL,
   lien_url VARCHAR(255) DEFAULT NULL,
-  niveau ENUM('or','argent','bronze','partenaire') DEFAULT 'partenaire',
   ordre_affichage INT DEFAULT 0,
   actif TINYINT(1) DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -139,21 +142,22 @@ INSERT INTO settings (k, v) VALUES
   ('bonus_defensif_seuil_ecart', '5'),
   ('bonus_defensif_points', '1'),
   ('ordre_departage', 'points,points_cartons,essais_pour,diff_essais,tirage_sort'),
-  ('duree_match_minutes', '12'),
-  ('duree_periode_minutes', '7'),
-  ('nb_mi_temps', '2'),
-  ('pause_entre_matchs_minutes', '3'),
+  ('classement_final_mode', 'rang'),   -- 'rang' = place finale par catégorie, 'points' = points de l'après-midi
   ('heure_debut_matin', '10:00'),
   ('heure_debut_aprem', '14:00'),
   ('nom_tournoi', 'Challenge Robert Bébien'),
   ('edition_tournoi', '26'),
   ('lieu_tournoi', 'Stade Pierre Albaladéjo'),
-  ('ville_tournoi', 'Joué-lès-Tours')
+  ('ville_tournoi', 'Joué-lès-Tours'),
   ('date_tournoi', '2026-10-18'),
   ('logo_tournoi_path', 'uploads/logo_tournoi.png')
 ON DUPLICATE KEY UPDATE v = v;
 
 -- Catégories par défaut
-INSERT INTO categories (nom) VALUES ('M8'), ('M10'), ('M12');
+-- M8 : 2 mi-temps de 7 min, M10/M12 : 1 période continue de 14 min. Coefficients : M8 x1, M10 x2, M12 x3.
+INSERT INTO categories (nom, nb_mi_temps, duree_mi_temps, pause_minutes, coef_classement) VALUES
+  ('M8', 2, 7, 3, 1),
+  ('M10', 1, 14, 3, 2),
+  ('M12', 1, 14, 3, 3);
 
 SET FOREIGN_KEY_CHECKS = 1;

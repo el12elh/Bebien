@@ -15,7 +15,7 @@ require_once __DIR__ . '/../includes/head.php';
 require_once __DIR__ . '/../includes/admin_nav.php';
 ?>
 <div class="container">
-  <h2 class="mb-4">Tableau de bord</h2>
+  <h2 class="page-title">Tableau de bord</h2>
   <div class="row g-3 mb-4">
     <div class="col-md-3"><div class="card text-center p-3"><div class="fs-2 fw-bold"><?= $nbTeams ?></div><div class="text-muted">Équipes engagées</div></div></div>
     <div class="col-md-3"><div class="card text-center p-3"><div class="fs-2 fw-bold text-primary"><?= $nbMatches ?></div><div class="text-muted">Matchs planifiés</div></div></div>
@@ -31,7 +31,9 @@ require_once __DIR__ . '/../includes/admin_nav.php';
             <h5 class="card-title">Catégorie <?= htmlspecialchars($cat['nom']) ?></h5>
             <p class="card-text text-muted small">
               Poules matin configurées : <?= $cat['nb_poules_matin'] ?><br>
-              Poules après-midi configurées : <?= $cat['nb_poules_aprem'] ?>
+              Poules après-midi configurées : <?= $cat['nb_poules_aprem'] ?><br>
+              Match : <?= (int) $cat['nb_mi_temps'] ?> × <?= (int) $cat['duree_mi_temps'] ?> min, pause <?= (int) $cat['pause_minutes'] ?> min<br>
+              Coefficient classement final : ×<?= (int) $cat['coef_classement'] ?>
             </p>
             <a href="pools_draw.php?category_id=<?= $cat['id'] ?>" class="btn btn-sm btn-outline-success">Gérer les poules</a>
           </div>
@@ -49,7 +51,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
       <li>Corriger, si besoin, le résultat d'un match dans « Matchs & Scores »</li>
       <li>Vérifier les classements après les poules du matin</li>
       <li>Générer les poules de l'après-midi une fois les poules du matin terminées</li>
-      <li>Suivre le classement général sur l'espace public</li>
+      <li>Suivre les classements, puis le classement final des clubs et le serial marqueur sur l'espace public</li>
     </ol>
   </div>
 </div>
