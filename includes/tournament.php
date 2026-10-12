@@ -804,25 +804,30 @@ function classementFinalCategorie(int $categoryId): array {
  * Classement final des clubs, toutes catégories confondues, basé sur les
  * résultats de l'après-midi.
  *
- * Méthode (réglage « classement_final_mode ») :
- *  - 'rang'   (défaut) : une équipe rapporte (nb d'équipes classées - rang final + 1)
- *                         points dans sa catégorie, multipliés par le coefficient de la catégorie.
- *  - 'points' : une équipe rapporte ses points de classement de l'après-midi,
- *                multipliés par le coefficient de la catégorie.
- * Les points de toutes les équipes d'un même club sont additionnés.
- * Départage : essais marqués l'après-midi, puis nom du club.
+ * Méthode :
+ *  1. Dans chaque catégorie, les équipes sont classées par niveau de poule
+ *     (une équipe d'une poule supérieure est toujours devant une équipe d'une
+ *     poule inférieure, quel que soit l'écart de points), puis par rang dans la poule.
+ *  2. Pour un club engagé avec plusieurs équipes, seule sa meilleure équipe
+ *     (poule la plus haute, puis meilleur rang) compte.
+ *  3. Le club classé n°1 de la catégorie marque 1 × coef points, le n°2 : 2 × coef, etc.
+ *     (coef = 1 pour M8, 2 pour M10, 3 pour M12 selon le réglage de la catégorie).
+ *  4. Les points de toutes les catégories sont additionnés : le club avec le MOINS
+ *     de points est premier.
+ *  5. Un club absent d'une catégorie (terminée ou en cours) reçoit (nb de clubs classés + 1) × coef.
  *
+ * Départage : essais marqués l'après-midi (le plus grand nombre devant), puis nom du club.
  * Une catégorie ne compte qu'à partir du premier match terminé de l'après-midi.
  *
  * Retourne ['clubs' => [...], 'categories' => [id => [...]], 'mode' => string, 'complete' => bool].
  */
 function classementFinalClubs(): array {
     $pdo = db();
-    $mode = getSetting('classement_final_mode', 'rang') === 'points' ? 'points' : 'rang';
 
     $categories = [];
     $clubs = [];
     $complete = true;
+    $classementsCat = []; // categoryId => [clubId => rang du club dans la catégorie]
 
     $countStmt = $pdo->prepare("SELECT COUNT(*) AS total, SUM(status = 'Terminé') AS done FROM matches WHERE category_id = ? AND phase = 'aprem'");
 
@@ -849,9 +854,10 @@ function classementFinalClubs(): array {
             continue;
         }
 
-        $ranking = classementFinalCategorie($categoryId);
-        $nbClassees = count($ranking);
-        foreach ($ranking as $row) {
+        // Équipes déjà triées : poule la plus haute d'abord, puis rang dans la poule.
+        // Le premier passage d'un club correspond donc à sa meilleure équipe.
+        $rangClub = [];
+        foreach (classementFinalCategorie($categoryId) as $row) {
             $clubId = (int) $row['club_id'];
             if (!isset($clubs[$clubId])) {
                 $clubs[$clubId] = [
@@ -863,17 +869,29 @@ function classementFinalClubs(): array {
                     'par_categorie' => [],
                 ];
             }
-            $base = $mode === 'points' ? (float) $row['points'] : ($nbClassees - $row['rang_final'] + 1);
-            $pts = $base * $coef;
-            $clubs[$clubId]['total'] += $pts;
             $clubs[$clubId]['essais'] += (int) $row['pts_pour'];
-            $clubs[$clubId]['par_categorie'][$categoryId] = ($clubs[$clubId]['par_categorie'][$categoryId] ?? 0) + $pts;
+            if (!isset($rangClub[$clubId])) {
+                $rangClub[$clubId] = count($rangClub) + 1;
+            }
         }
+        $classementsCat[$categoryId] = $rangClub;
+    }
+
+    // Attribution des points (le plus petit total gagne)
+    foreach ($classementsCat as $categoryId => $rangClub) {
+        $coef = $categories[$categoryId]['coef'];
+        $penalite = count($rangClub) + 1;
+        foreach ($clubs as $clubId => &$club) {
+            $pts = ($rangClub[$clubId] ?? $penalite) * $coef;
+            $club['par_categorie'][$categoryId] = $pts;
+            $club['total'] += $pts;
+        }
+        unset($club);
     }
 
     $liste = array_values($clubs);
     usort($liste, function ($a, $b) {
-        return [$b['total'], $b['essais'], $a['nom_club']] <=> [$a['total'], $a['essais'], $b['nom_club']];
+        return [$a['total'], $b['essais'], $a['nom_club']] <=> [$b['total'], $a['essais'], $b['nom_club']];
     });
 
     // Rang "à la compétition" : deux clubs strictement à égalité partagent le même rang
@@ -886,7 +904,7 @@ function classementFinalClubs(): array {
     }
     unset($row);
 
-    return ['clubs' => $liste, 'categories' => $categories, 'mode' => $mode, 'complete' => $complete];
+    return ['clubs' => $liste, 'categories' => $categories, 'mode' => 'rang', 'complete' => $complete];
 }
 
 /**

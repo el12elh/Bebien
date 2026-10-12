@@ -239,12 +239,9 @@ require_once __DIR__ . '/includes/public_nav.php';
         </div>
       </div>
       <p class="small text-muted mt-3 mb-0">
-        <?php if ($final['mode'] === 'points'): ?>
-          Chaque équipe rapporte ses points de classement de l'après-midi, multipliés par le coefficient de sa catégorie.
-        <?php else: ?>
-          Chaque équipe rapporte autant de points que de places derrière elle (+1) dans sa catégorie, multipliés par le coefficient de la catégorie.
-        <?php endif; ?>
-        Les points des équipes d'un même club s'additionnent. En cas d'égalité : essais marqués l'après-midi.
+        Dans chaque catégorie, une équipe d'une poule supérieure est toujours classée devant une équipe d'une poule inférieure. Seule la meilleure équipe de chaque club est prise en compte. La 1<sup>re</sup> place rapporte 1 point, la 2<sup>e</sup> 2 points, etc., multipliés par le coefficient de la catégorie
+        (<?= implode(', ', array_map(fn($c) => htmlspecialchars($c['nom']) . ' ×' . (int) $c['coef'], $cats)) ?>).
+        Le club avec le moins de points est premier. En cas d'égalité : essais marqués l'après-midi.
       </p>
     <?php endif; ?>
 

@@ -31,11 +31,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "Tirage effectué : $nbPoules poule(s) créée(s), calendrier et terrains générés automatiquement.";
 
         } elseif ($_POST['action'] === 'delete_all') {
-            $pdo->prepare(
-                "DELETE FROM pools WHERE category_id = ? AND phase = 'matin'"
-            )->execute([$categoryId]);
+            $pdo->beginTransaction();
+            try {
+                // Matchs d'abord (matin + après-midi), puis les poules des deux phases
+                $pdo->prepare('DELETE FROM matches WHERE category_id = ?')->execute([$categoryId]);
+                $pdo->prepare('DELETE FROM pools WHERE category_id = ?')->execute([$categoryId]);
+                $pdo->commit();
+            } catch (Throwable $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
 
-            $message = 'Toutes les poules du matin et leurs matchs ont été supprimés pour cette catégorie.';
+            $message = 'Toutes les poules (matin et après-midi) et tous leurs matchs ont été supprimés pour cette catégorie.';
         } elseif ($_POST['action'] === 'generate') {
             $catStmt = $pdo->prepare('SELECT nb_poules_aprem FROM categories WHERE id = ?');
             $catStmt->execute([$categoryId]);
@@ -239,7 +246,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
                 <form
                     method="post"
                     class="mt-2"
-                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer toutes les poules du matin ainsi que leurs matchs pour cette catégorie ?');"
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer toutes les poules (matin et après-midi) ainsi que tous les matchs de cette catégorie ?');"
                 >
                     <input type="hidden" name="action" value="delete_all">
                     <input type="hidden" name="submit_token" value="<?= htmlspecialchars(ensureSubmitToken()) ?>">
