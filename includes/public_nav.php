@@ -22,6 +22,7 @@ $navQuery = $navQuery !== '' ? '?' . $navQuery : '';
     <div class="collapse navbar-collapse" id="navPublic">
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link <?= $currentPage==='index'?'active':'' ?>" href="/">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='pools'?'active':'' ?>" href="pools<?= $navQuery ?>">Poules</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='schedule'?'active':'' ?>" href="schedule<?= $navQuery ?>">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='standings'?'active':'' ?>" href="standings<?= $navQuery ?>">Classements</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='rules'?'active':'' ?>" href="rules">Règlement</a></li>
@@ -33,11 +34,11 @@ $navQuery = $navQuery !== '' ? '?' . $navQuery : '';
             <?php if (($user['role'] ?? '') === 'admin'): ?>
               <a href="/admin/" class="btn btn-outline-light btn-sm me-2">Admin</a>
             <?php endif; ?>
-              <a href="/tdm/" class="btn btn-outline-light btn-sm me-2">TdM</a>
+              <a href="/tdm/" class="btn btn-outline-light btn-sm me-2">Table de Marque</a>
               <br>
             <a href="admin/signout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
         <?php else: ?>
-            <a href="/admin/signin" class="btn btn-outline-light btn-sm">Admin / TdM</a>
+            <a href="/admin/signin" class="btn btn-outline-light btn-sm">Admin / Table de Marque</a>
         <?php endif; ?>
 
     </div>

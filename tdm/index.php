@@ -39,6 +39,13 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $matches = $stmt->fetchAll();
 
+$fieldName = null;
+if (!empty($user['field_id'])) {
+    $fieldStmt = $pdo->prepare('SELECT nom FROM fields WHERE id = ?');
+    $fieldStmt->execute([$user['field_id']]);
+    $fieldName = $fieldStmt->fetchColumn();
+}
+
 $pageTitle = 'Espace Table de marque';
 require_once __DIR__ . '/../includes/head.php';
 require_once __DIR__ . '/../includes/tdm_nav.php';
@@ -46,7 +53,15 @@ require_once __DIR__ . '/../includes/tdm_nav.php';
 <div class="container">
   <?php if (!empty($_GET['finished'])): ?><div class="alert alert-success text-center">Match terminé.</div><?php endif; ?>
   <?php if (!empty($user['field_id'])): ?>
-    <p class="text-muted">Matchs affichés pour votre terrain assigné.</p>
+  <p class="text-muted mb-1">Matchs affichés pour votre terrain assigné</p>
+  <?php if (!empty($fieldName)): ?>
+    <h3 class="fs-1 fw-bold mb-3"><?= htmlspecialchars($fieldName) ?></h3>
+  <?php endif; ?>
+  <div class="alert alert-info py-2 mb-3">
+    <ul class="mb-0 ps-3">
+      <li>Si vous vous êtes trompé dans le score final d'un match, merci de le signaler au responsable des tables de marque pour qu'il rectifie le score.</li>
+    </ul>
+  </div>
   <?php endif; ?>
   
   <div class="d-grid gap-3">

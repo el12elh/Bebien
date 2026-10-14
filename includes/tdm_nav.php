@@ -13,6 +13,7 @@ $user = currentUser();
     <div class="collapse navbar-collapse" id="navTdm">
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='pools'?'active':'' ?>" href="pools<?= $navQuery ?>">Poules</a></li>
         <li class="nav-item"><a class="nav-link" href="/schedule">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link" href="/standings">Classements</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='rules'?'active':'' ?>" href="/rules">Règlement</a></li>
