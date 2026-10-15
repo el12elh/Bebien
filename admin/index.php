@@ -20,7 +20,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
     <div class="col-md-3"><div class="card text-center p-3"><div class="fs-2 fw-bold"><?= $nbTeams ?></div><div class="text-muted">Équipes engagées</div></div></div>
     <div class="col-md-3"><div class="card text-center p-3"><div class="fs-2 fw-bold text-primary"><?= $nbMatches ?></div><div class="text-muted">Matchs planifiés</div></div></div>
     <div class="col-md-3"><div class="card text-center p-3"><div class="fs-2 fw-bold text-warning"><?= $nbEnCours ?></div><div class="text-muted">Matchs en cours</div></div></div>
-    <div class="col-md-3"><div class="card text-center p-3 shadow-none bg-transparent"><div class="fs-2 fw-bold" style="color: var(--site-primary);"><?= $nbterminés ?></div><div class="text-muted">Matchs terminés</div></div></div>
+    <div class="col-md-3"><div class="card text-center p-3"><div class="fs-2 fw-bold" style="color: var(--site-primary);"><?= $nbterminés ?></div><div class="text-muted">Matchs terminés</div></div></div>
   </div>
 
   <div class="row g-3">
