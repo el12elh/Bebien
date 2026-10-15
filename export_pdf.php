@@ -99,7 +99,7 @@ $soft = [0.933, 0.949, 0.980];
 $white = [1, 1, 1];
 
 $tournoi = (string) getSetting('nom_tournoi', 'Tournoi');
-$pdf = new SimplePdf($tournoi . ' - export du ' . date('d/m/Y H:i'));
+$pdf = new SimplePdf($tournoi . ' - Export du ' . date('d/m/Y H:i:s'));
 $cw = $pdf->contentWidth();
 $any = false;
 
@@ -130,10 +130,12 @@ foreach ($categories as $cat) {
             $pdf->ensureSpace(40);
             $pdf->text($pdf->margin, $pdf->y + 10, 'Poules', 12, true, $navy);
             $pdf->y += 20;
-            $colW = $cw / 3;
+            // 4 poules : toutes sur la même ligne ; sinon 3 par ligne
+            $perRow = count($pools) === 4 ? 4 : 3;
+            $colW = $cw / $perRow;
             $boxW = $colW - 8;
             $border = [0.72, 0.78, 0.88];
-            foreach (array_chunk($pools, 3) as $line) {
+            foreach (array_chunk($pools, $perRow) as $line) {
                 $blocks = [];
                 $maxTeams = 0;
                 foreach ($line as $pool) {
@@ -393,7 +395,7 @@ if (!$any) {
 }
 
 $data = $pdf->output();
-$filename = 'tournoi-' . date('Y-m-d') . '.pdf';
+$filename = $tournoi . ' - ' . date('YmdHis') . '.pdf';
 if (function_exists('ob_get_level')) {
     while (ob_get_level() > 0) {
         ob_end_clean();

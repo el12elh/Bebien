@@ -34,8 +34,8 @@ require_once __DIR__ . '/includes/public_nav.php';
         <label class="form-label d-block">Contenu</label>
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="poules" id="cPoules" checked><label class="form-check-label" for="cPoules">Poules</label></div>
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="matchs" id="cMatchs" checked><label class="form-check-label" for="cMatchs">Matchs</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="classements" id="cClass" checked><label class="form-check-label" for="cClass">Classements</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="challenge" id="cChal" checked><label class="form-check-label" for="cChal">Challenge clubs</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="classements" id="cClass" ><label class="form-check-label" for="cClass">Classements</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="challenge" id="cChal" ><label class="form-check-label" for="cChal">Challenge clubs</label></div>
       </div>
     </div>
   </form>
