@@ -317,9 +317,10 @@ function classementPoule(int $poolId): array {
     $stmt->execute([$poolId]);
     $teams = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // Determine for this pool's category whether a club has multiple teams
-    $catStmt = $pdo->prepare('SELECT category_id FROM pools WHERE id = ?');
+    $catStmt = $pdo->prepare('SELECT category_id, phase FROM pools WHERE id = ?');
     $catStmt->execute([$poolId]);
-    $poolCategoryId = $catStmt->fetchColumn();
+    $pool = $catStmt->fetch(PDO::FETCH_ASSOC);
+    $poolCategoryId = $pool['category_id'] ?? null;
     $clubCounts = [];
     if ($poolCategoryId) {
         $countStmt = $pdo->prepare('SELECT club_id, COUNT(*) AS cnt FROM teams WHERE category_id = ? GROUP BY club_id');
@@ -339,9 +340,28 @@ function classementPoule(int $poolId): array {
             'logo_path' => $t['logo_path'] ?? null,
             'joues' => 0, 'v' => 0, 'n' => 0, 'd' => 0,
             'pts_pour' => 0, 'pts_contre' => 0, 'points' => 0,
+            'points_office' => false,
             'jaunes' => 0, 'rouges' => 0,
             'confrontations' => [], // team_id adverse => 'v'|'n'|'d'
         ];
+    }
+
+    if (($pool['phase'] ?? null) === 'matin' && $poolCategoryId && $teams) {
+        $poolSizesStmt = $pdo->prepare("SELECT COUNT(pt.team_id) AS team_count
+                                        FROM pools p
+                                        LEFT JOIN pool_teams pt ON pt.pool_id = p.id
+                                        WHERE p.category_id = ? AND p.phase = 'matin'
+                                        GROUP BY p.id");
+        $poolSizesStmt->execute([$poolCategoryId]);
+        $poolSizes = array_map('intval', $poolSizesStmt->fetchAll(PDO::FETCH_COLUMN));
+        if ($poolSizes && count($teams) === max($poolSizes) - 1) {
+            foreach ($stats as &$teamStats) {
+                $teamStats['points'] += 4;
+                $teamStats['pts_pour'] += 2;
+                $teamStats['points_office'] = true;
+            }
+            unset($teamStats);
+        }
     }
 
     $ptsV = (float) getSetting('points_victoire', 3);

@@ -225,6 +225,7 @@ foreach ($categories as $cat) {
             $tables = $phase === 'matin'
                 ? [['pool_nom' => 'Classement général ' . $cat['nom'], 'classement' => classementGeneral((int) $cat['id'], 'matin')]]
                 : classementCategorie((int) $cat['id'], $phase);
+            $hasPointsOffice = false;
             foreach ($tables as $pool) {
                 $rows = $pool['classement'];
                 $pdf->ensureSpace(34 + 18 * min(count($rows), 4));
@@ -244,9 +245,14 @@ foreach ($categories as $cat) {
                     }
                     $yRow = $pdf->y;
                     $logo = pdfLogo($pdf, $r['logo_path'] ?? null);
+                    $teamName = $r['nom_club'] . ($r['nom_equipe'] ? ' ' . $r['nom_equipe'] : '');
+                    if (!empty($r['points_office'])) {
+                        $teamName .= '*';
+                        $hasPointsOffice = true;
+                    }
                     $cells = [
                         (int) $r['rang'],
-                        $r['nom_club'] . ($r['nom_equipe'] ? ' ' . $r['nom_equipe'] : ''),
+                        $teamName,
                         $r['points'], (int) $r['joues'], (int) $r['v'], (int) $r['n'], (int) $r['d'],
                         (int) ($r['jaunes'] ?? 0), (int) ($r['rouges'] ?? 0),
                         (int) $r['pts_pour'], (int) $r['pts_contre'], (int) $r['diff'],
@@ -264,6 +270,10 @@ foreach ($categories as $cat) {
                     }
                 }
                 $pdf->y += 10;
+            }
+            if ($hasPointsOffice) {
+                $pdf->text($pdf->margin, $pdf->y, "* 4 points et 2 essais attribues d'office.", 8, false, $navy);
+                $pdf->y += 14;
             }
         }
     }

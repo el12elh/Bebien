@@ -50,6 +50,15 @@ if ($view === 'poules' && $categoryId) {
     $data = classementCategorie($categoryId, $phase);
   }
 }
+$hasPointsOffice = false;
+foreach ($data as $pool) {
+  foreach ($pool['classement'] as $row) {
+    if (!empty($row['points_office'])) {
+      $hasPointsOffice = true;
+      break 2;
+    }
+  }
+}
 $liveStmt = $pdo->query('SELECT 1 FROM matches WHERE status = "Live" LIMIT 1');
 $hasLive = (bool) $liveStmt->fetchColumn();
 
@@ -162,7 +171,7 @@ require_once __DIR__ . '/includes/public_nav.php';
                     <td>
                       <div class="d-flex align-items-center gap-2">
                         <?php if (!empty($row['logo_path'])): ?><img src="<?= htmlspecialchars($row['logo_path']) ?>" alt="Logo de <?= htmlspecialchars($row['nom_club']) ?>" style="height:24px; width:auto; object-fit:contain;"><?php endif; ?>
-                        <span class="text-nowrap"><?= htmlspecialchars($row['nom_club']) ?><small class="text-muted"><?= htmlspecialchars($row['nom_equipe']) ?></small></span>
+                        <span class="text-nowrap"><?= htmlspecialchars($row['nom_club']) ?><small class="text-muted"><?= htmlspecialchars($row['nom_equipe']) ?></small><?php if (!empty($row['points_office'])): ?><sup title="4 points attribués d'office">*</sup><?php endif; ?></span>
                       </div>
                     </td>
                     <td><strong><?= $row['points'] ?></strong></td>
@@ -184,6 +193,9 @@ require_once __DIR__ . '/includes/public_nav.php';
       </div>
     <?php endforeach; ?>
   </div>
+  <?php if ($hasPointsOffice): ?>
+    <p class="text-muted mt-2"><strong>*</strong> 4 points et 2 essais attribués d'office.</p>
+  <?php endif; ?>
   <?php else: ?>
   <h3 class="section-title">Classement final</h3>
     <?php
