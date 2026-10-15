@@ -17,8 +17,9 @@ $user = currentUser();
         <li class="nav-item"><a class="nav-link <?= $currentPage==='teams'?'active':'' ?>" href="teams">Clubs & Équipes</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='pools_draw'?'active':'' ?>" href="pools_draw">Tirage au sort</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='matches'?'active':'' ?>" href="matches">Matchs & Scores</a></li>
-        <li class="nav-item"><a class="nav-link <?= $currentPage==='planning'?'active':'' ?>" href="planning">Planning & Terrains</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='planning'?'active':'' ?>" href="planning">Terrains</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='users'?'active':'' ?>" href="users">Utilisateurs</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='contact_messages'?'active':'' ?>" href="contact_messages">Messages</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='sponsors'?'active':'' ?>" href="sponsors">Partenaires</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='settings'?'active':'' ?>" href="settings">Paramètres</a></li>
       </ul>

@@ -65,9 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($values['name'] === '') {
         $errors[] = 'Veuillez indiquer votre nom.';
+    } elseif (strlen($values['name']) > 150) {
+        $errors[] = 'Votre nom ne doit pas dépasser 150 caractères.';
     }
     if ($values['email'] === '' || !filter_var($values['email'], FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Veuillez indiquer une adresse email valide.';
+    }
+    if (strlen($values['subject']) > 255) {
+        $errors[] = 'Le sujet ne doit pas dépasser 255 caractères.';
     }
     if ($values['message'] === '') {
         $errors[] = 'Veuillez saisir votre message.';
@@ -76,16 +81,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
+        $stmt = db()->prepare('INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)');
+        $stmt->execute([$values['name'], $values['email'], $values['subject'], $values['message']]);
+
         $toEmail = trim((string) getSetting('contact_email', ''));
         if ($toEmail === '') {
             $toEmail = 'educ.sportif@jouerugby.fr';
         }
-        if (sendContactMessage($toEmail, $values)) {
-            $message = 'Votre message a bien été envoyé.';
-            $values = array_fill_keys(array_keys($values), '');
-        } else {
-            $errors[] = 'Le message n’a pas pu être envoyé. Veuillez réessayer plus tard.';
-        }
+        sendContactMessage($toEmail, $values); // Notification email best effort : le message est déjà conservé en base.
+        $message = 'Votre message a bien été reçu par l’équipe organisatrice.';
+        $values = array_fill_keys(array_keys($values), '');
     }
 }
 
@@ -126,7 +131,7 @@ require_once __DIR__ . '/includes/public_nav.php';
           <div class="row g-3">
             <div class="col-md-6">
               <label for="contact-name" class="form-label">Nom</label>
-              <input id="contact-name" type="text" name="name" class="form-control" value="<?= htmlspecialchars($values['name']) ?>" required>
+              <input id="contact-name" type="text" name="name" maxlength="150" class="form-control" value="<?= htmlspecialchars($values['name']) ?>" required>
             </div>
             <div class="col-md-6">
               <label for="contact-email" class="form-label">Email</label>
@@ -134,7 +139,7 @@ require_once __DIR__ . '/includes/public_nav.php';
             </div>
             <div class="col-12">
               <label for="contact-subject" class="form-label">Sujet</label>
-              <input id="contact-subject" type="text" name="subject" class="form-control" value="<?= htmlspecialchars($values['subject']) ?>">
+              <input id="contact-subject" type="text" name="subject" maxlength="255" class="form-control" value="<?= htmlspecialchars($values['subject']) ?>">
             </div>
             <div class="col-12">
               <label for="contact-message" class="form-label">Message</label>

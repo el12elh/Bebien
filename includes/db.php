@@ -25,12 +25,25 @@ function db(): PDO {
                 ensureTeamSeedColumn($pdo);
                 @file_put_contents($teamSeedSchemaFlag, date('c'));
             }
+            ensureContactMessagesTable($pdo);
         } catch (PDOException $e) {
             http_response_code(500);
             die('Erreur de connexion à la base de données. Vérifiez config. (' . $e->getMessage() . ')');
         }
     }
     return $pdo;
+}
+
+function ensureContactMessagesTable(PDO $pdo): void {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS contact_messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        email VARCHAR(254) NOT NULL,
+        subject VARCHAR(255) NOT NULL DEFAULT '',
+        message TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_contact_messages_created_at (created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 }
 
 function ensureTeamSeedColumn(PDO $pdo): void {
