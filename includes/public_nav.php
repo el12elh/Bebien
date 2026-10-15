@@ -25,6 +25,7 @@ $navQuery = $navQuery !== '' ? '?' . $navQuery : '';
         <li class="nav-item"><a class="nav-link <?= $currentPage==='pools'?'active':'' ?>" href="pools<?= $navQuery ?>">Poules</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='schedule'?'active':'' ?>" href="schedule<?= $navQuery ?>">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='standings'?'active':'' ?>" href="standings<?= $navQuery ?>">Classements</a></li>
+        <li class="nav-item"><a class="nav-link <?= $currentPage==='summary'?'active':'' ?>" href="summary">Récapitulatif</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='rules'?'active':'' ?>" href="rules">Règlement</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='sponsors'?'active':'' ?>" href="sponsors">Partenaires</a></li>
         <li class="nav-item"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="contact">Contact</a></li>
