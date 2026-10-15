@@ -94,6 +94,7 @@ require_once __DIR__ . '/includes/public_nav.php';
     </h1>
     <p class="hero-meta">
       <?php if ($dateTournoi_formatted): ?><i class="bi bi-calendar-event"></i><?= htmlspecialchars($dateTournoi_formatted) ?><?php endif; ?>
+      <br>
       <?php if ($lieuTournoi): ?><span class="ms-3"><i class="bi bi-geo-alt"></i><?= htmlspecialchars($lieuTournoi) ?>, <?= htmlspecialchars($villeTournoi) ?></span><?php endif; ?>
     </p>
     <p class="hero-hint">Suivez les résultats et les classements en direct.</p>
