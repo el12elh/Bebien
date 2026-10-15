@@ -16,6 +16,7 @@ $user = currentUser();
         <li class="nav-item"><a class="nav-link" href="/pools<?= $navQuery ?>">Poules</a></li>
         <li class="nav-item"><a class="nav-link" href="/schedule">Calendrier</a></li>
         <li class="nav-item"><a class="nav-link" href="/standings">Classements</a></li>
+        <li class="nav-item"><a class="nav-link" href="/summary">Récapitulatif</a></li>
         <li class="nav-item"><a class="nav-link" href="/rules">Règlement</a></li>
         <li class="nav-item"><a class="nav-link" href="/sponsors">Partenaires</a></li>
         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
