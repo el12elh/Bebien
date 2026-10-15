@@ -11,6 +11,26 @@ $categoryId = (int) ($_GET['category_id'] ?? ($categories[0]['id'] ?? 0));
 $message = null;
 $error = null;
 
+/**
+ * Sécurité : le tirage au sort du matin est verrouillé dès que tous les matchs du matin
+ * sont terminés, et ne redevient disponible que lorsque tous ceux de l'après-midi le sont.
+ */
+function drawLocked(PDO $pdo, int $categoryId): bool
+{
+    $stmt = $pdo->prepare(
+        "SELECT phase, COUNT(*) AS total, SUM(status <> 'Terminé') AS pending
+         FROM matches WHERE category_id = ? GROUP BY phase"
+    );
+    $stmt->execute([$categoryId]);
+    $done = ['matin' => false, 'aprem' => false];
+    foreach ($stmt->fetchAll() as $row) {
+        if (isset($done[$row['phase']])) {
+            $done[$row['phase']] = (int) $row['total'] > 0 && (int) $row['pending'] === 0;
+        }
+    }
+    return $done['matin'] && !$done['aprem'];
+}
+
 // parseRankList(), formatRankList(), calculerRangsParDefaut() et validerBucketsRangs()
 // vivent désormais dans includes/tournament.php (réutilisables, testables, partagées).
 
@@ -20,6 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($_POST['action'] === 'draw') {
+            if (drawLocked($pdo, $categoryId)) {
+                throw new RuntimeException("Tirage au sort verrouillé : les matchs du matin sont terminés. Il sera de nouveau possible une fois tous les matchs de l'après-midi terminés.");
+            }
             $nbPoules = (int) $_POST['nb_poules'];
 
             tirerPoulesMatin($categoryId, $nbPoules);
@@ -97,6 +120,8 @@ foreach ($categories as $c) {
         break;
     }
 }
+
+$drawLocked = $categoryId ? drawLocked($pdo, $categoryId) : false;
 
 $pools = [];
 $poolsAprem = [];
@@ -212,6 +237,13 @@ require_once __DIR__ . '/../includes/admin_nav.php';
                     équipes engagées en
                     <?= htmlspecialchars($currentCat['nom']) ?>.
                 </p>
+                <?php if ($drawLocked): ?>
+                    <div class="alert alert-secondary mb-2">
+                        <i class="bi bi-lock"></i>
+                        Tirage au sort verrouillé : les matchs du matin sont terminés.
+                        Il sera de nouveau disponible quand tous les matchs de l'après-midi seront terminés.
+                    </div>
+                <?php else: ?>
                 <form
                     method="post"
                     class="row g-2 align-items-end"
@@ -243,6 +275,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
                     entre les poules. Le calendrier des matchs et l'attribution
                     des terrains/horaires sont générés automatiquement.
                 </p>
+                <?php endif; ?>
                 <form
                     method="post"
                     class="mt-2"
