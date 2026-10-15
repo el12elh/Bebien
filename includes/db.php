@@ -20,12 +20,24 @@ function db(): PDO {
                 ensureMatchTimerColumns($pdo);
                 @file_put_contents($schemaFlag, date('c'));
             }
+            $teamSeedSchemaFlag = __DIR__ . '/.team_seed_schema_ok';
+            if (!is_file($teamSeedSchemaFlag)) {
+                ensureTeamSeedColumn($pdo);
+                @file_put_contents($teamSeedSchemaFlag, date('c'));
+            }
         } catch (PDOException $e) {
             http_response_code(500);
             die('Erreur de connexion à la base de données. Vérifiez config. (' . $e->getMessage() . ')');
         }
     }
     return $pdo;
+}
+
+function ensureTeamSeedColumn(PDO $pdo): void {
+    $stmt = $pdo->query("SHOW COLUMNS FROM teams LIKE 'tete_serie'");
+    if (!$stmt->fetch()) {
+        $pdo->exec('ALTER TABLE teams ADD COLUMN tete_serie TINYINT(1) NOT NULL DEFAULT 0 AFTER nom_equipe');
+    }
 }
 
 function ensureUserResetColumns(PDO $pdo): void {

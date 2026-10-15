@@ -73,16 +73,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     } elseif ($action === 'add') {
         $clubName = trim((string)($_POST['nom_club'] ?? ''));
-        $stmt = $pdo->prepare('INSERT INTO teams (category_id, club_id, nom_equipe) VALUES (?,?,?)');
-        $stmt->execute([$_POST['category_id'], $_POST['club_id'] ?: null, $_POST['nom_equipe']]);
+        $seeded = (string)($_POST['tete_serie'] ?? '0');
+        if (!in_array($seeded, ['0', '1'], true)) {
+            $seeded = '0';
+        }
+        $stmt = $pdo->prepare('INSERT INTO teams (category_id, club_id, nom_equipe, tete_serie) VALUES (?,?,?,?)');
+        $stmt->execute([$_POST['category_id'], $_POST['club_id'] ?: null, $_POST['nom_equipe'], $seeded]);
     } elseif ($action === 'edit_team') {
         $teamId = (int)($_POST['id'] ?? 0);
         $categoryId = (int)($_POST['category_id'] ?? 0);
         $clubId = (int)($_POST['club_id'] ?? 0);
         $teamName = trim((string)($_POST['nom_equipe'] ?? ''));
+        $seeded = (string)($_POST['tete_serie'] ?? '0');
+        if (!in_array($seeded, ['0', '1'], true)) {
+            $seeded = '0';
+        }
         if ($teamId > 0 && $categoryId > 0 && $clubId > 0 && $teamName !== '') {
-            $stmt = $pdo->prepare('UPDATE teams SET category_id = ?, club_id = ?, nom_equipe = ? WHERE id = ?');
-            $stmt->execute([$categoryId, $clubId, $teamName, $teamId]);
+            $stmt = $pdo->prepare('UPDATE teams SET category_id = ?, club_id = ?, nom_equipe = ?, tete_serie = ? WHERE id = ?');
+            $stmt->execute([$categoryId, $clubId, $teamName, $seeded, $teamId]);
         }
     } elseif ($action === 'delete') {
         $teamId = (int)($_POST['id'] ?? 0);
@@ -196,7 +204,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
           <input type="hidden" name="action" value="edit_team">
           <input type="hidden" name="submit_token" value="<?= htmlspecialchars(ensureSubmitToken()) ?>">
           <input type="hidden" name="id" value="<?= $editTeam['id'] ?>">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">Catégorie</label>
             <select name="category_id" class="form-select" required>
               <?php foreach ($categories as $c): ?>
@@ -212,9 +220,16 @@ require_once __DIR__ . '/../includes/admin_nav.php';
               <?php endforeach; ?>
             </select>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label class="form-label">Nom équipe</label>
             <input type="text" name="nom_equipe" class="form-control" value="<?= htmlspecialchars($editTeam['nom_equipe']) ?>" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Tête de série</label>
+            <select name="tete_serie" class="form-select" required>
+              <option value="0" <?= empty($editTeam['tete_serie']) ? 'selected' : '' ?>>Non</option>
+              <option value="1" <?= !empty($editTeam['tete_serie']) ? 'selected' : '' ?>>Oui</option>
+            </select>
           </div>
           <div class="col-md-2">
             <button class="btn btn-primary w-100">Enregistrer</button>
@@ -283,7 +298,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
           </select>
           <input type="hidden" name="nom_club" value="">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label">Nom équipe</label>
           <select name="nom_equipe" class="form-select" required>
             <option value="">Sélectionner une équipe</option>
@@ -291,6 +306,13 @@ require_once __DIR__ . '/../includes/admin_nav.php';
             <option value="#2">2</option>
             <option value="#3">3</option>
             <option value="#4">4</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Tête de série</label>
+          <select name="tete_serie" class="form-select" required>
+            <option value="0" selected>Non</option>
+            <option value="1">Oui</option>
           </select>
         </div>
         <div class="col-md-2">
@@ -317,7 +339,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
     <?php foreach ($teams as $t): ?>
       <tr>
         <td><?= htmlspecialchars($t['cat_nom']) ?></td>
-        <td><?= htmlspecialchars($t['nom_club']) ?> <small class="text-muted"><?= htmlspecialchars($t['nom_equipe']) ?></small></td>
+        <td><?= htmlspecialchars($t['nom_club']) ?> <small class="text-muted"><?= htmlspecialchars($t['nom_equipe']) ?></small><?= !empty($t['tete_serie']) ? ' ⭐' : '' ?></td>
         <td>
           <div class="d-flex gap-2">
             <a href="teams.php?edit_team_id=<?= $t['id'] ?>" class="btn btn-sm btn-outline-primary icon-btn" title="Modifier l'équipe" aria-label="Modifier l'équipe">
@@ -335,7 +357,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
         </td>
       </tr>
     <?php endforeach; ?>
-    <?php if (!$teams): ?><tr><td colspan="6" class="text-center text-muted">Aucune équipe.</td></tr><?php endif; ?>
+    <?php if (!$teams): ?><tr><td colspan="3" class="text-center text-muted">Aucune équipe.</td></tr><?php endif; ?>
     </tbody>
   </table>
   </div>

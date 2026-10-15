@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS teams (
   category_id INT NOT NULL,
   club_id INT NOT NULL,
   nom_equipe VARCHAR(50) DEFAULT NULL,   -- ex: "Club X # 1" si plusieurs équipes/club
+  tete_serie TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
   FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE

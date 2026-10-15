@@ -31,8 +31,9 @@ espace public en temps réel, **export PDF** et bandeau sponsors.
 
 1. **Catégories** : vérifiez/ajustez M8, M10, M12 (nombre de poules du matin et de l'après-midi,
    coefficient utilisé pour le classement des clubs).
-2. **Équipes** : saisissez toutes les équipes engagées par catégorie (ou faites-le saisir
-   en amont par les clubs si vous branchez un formulaire, non inclus par défaut).
+2. **Équipes** : saisissez toutes les équipes engagées par catégorie et indiquez si chacune est
+   tête de série (Oui / Non), ou faites-le saisir en amont par les clubs si vous branchez un
+   formulaire, non inclus par défaut.
 3. **Terrains** (menu *Planning & terrains*) : renseignez vos terrains disponibles.
 4. **Paramètres** : ajustez le nom et la date du tournoi, le barème de points, l'ordre de départage,
    la durée des matchs et les horaires de début, **en stricte conformité avec votre dossier sportif**.
