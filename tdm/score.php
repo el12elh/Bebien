@@ -287,6 +287,7 @@ let currentPeriod = <?= (int) $timerPeriod ?> || 1;
 let timerInterval = null;
 let isRunning = <?= $timerStatus === 'running' ? 'true' : 'false' ?>;
 let isOvertime = <?= $timerOvertime ? 'true' : 'false' ?>;
+let timerEndAt = null; // heure de fin absolue (ms) : évite le décalage quand le téléphone se verrouille
 
 function formatTime(totalSeconds) {
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
@@ -367,12 +368,17 @@ function updateTimerUI() {
 }
 
 function tickTimer() {
-  remainingSeconds -= 1;
+  if (timerEndAt !== null) {
+    remainingSeconds = Math.max(0, Math.round((timerEndAt - Date.now()) / 1000));
+  } else {
+    remainingSeconds -= 1;
+  }
   if (remainingSeconds <= 0) {
     remainingSeconds = 0;
     isRunning = false;
     clearInterval(timerInterval);
     timerInterval = null;
+    timerEndAt = null;
     const timerForm = document.getElementById('timerControlBtn')?.closest('form');
     sendTimerAction('expire', timerForm);
   }
@@ -382,6 +388,7 @@ function tickTimer() {
 function startTimer() {
   if (timerInterval) return;
   isRunning = true;
+  timerEndAt = Date.now() + remainingSeconds * 1000;
   timerInterval = setInterval(tickTimer, 1000);
   updateTimerUI();
 }
@@ -398,7 +405,8 @@ function pauseTimer() {
   const hasStarted = remainingSeconds < PERIOD_DURATION || currentPeriod > 1 || isOvertime;
   if (hasStarted) {
     isRunning = true;
-    timerInterval = setInterval(tickTimer, 1000);
+    timerEndAt = Date.now() + remainingSeconds * 1000;
+  timerInterval = setInterval(tickTimer, 1000);
     updateTimerUI();
   }
 }
@@ -557,8 +565,12 @@ document.querySelectorAll('#scoreForm input[type="number"]').forEach((input) => 
   input.addEventListener('blur', autosaveScore);
 });
 if (isRunning) {
+  timerEndAt = Date.now() + remainingSeconds * 1000;
   timerInterval = setInterval(tickTimer, 1000);
 }
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && isRunning) tickTimer();
+});
 updateTimerUI();
 </script>
 </body></html>
