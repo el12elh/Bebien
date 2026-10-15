@@ -400,7 +400,9 @@ if (function_exists('ob_get_level')) {
     }
 }
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="' . $filename . '"');
+// inline=1 : ouverture dans le navigateur (pour imprimer) ; sinon téléchargement
+$disposition = isset($_GET['inline']) ? 'inline' : 'attachment';
+header('Content-Disposition: ' . $disposition . '; filename="' . $filename . '"');
 header('Content-Length: ' . strlen($data));
 header('Cache-Control: private, max-age=0, must-revalidate');
 echo $data;
