@@ -54,6 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "Tirage effectué : $nbPoules poule(s) créée(s), calendrier et terrains générés automatiquement.";
 
         } elseif ($_POST['action'] === 'delete_all') {
+            if (drawLocked($pdo, $categoryId)) {
+                throw new RuntimeException("Suppression verrouillée : les matchs du matin sont terminés. Elle sera de nouveau possible une fois tous les matchs de l'après-midi terminés.");
+            }
+
             $pdo->beginTransaction();
             try {
                 // Matchs d'abord (matin + après-midi), puis les poules des deux phases
@@ -284,11 +288,16 @@ require_once __DIR__ . '/../includes/admin_nav.php';
                     <input type="hidden" name="action" value="delete_all">
                     <input type="hidden" name="submit_token" value="<?= htmlspecialchars(ensureSubmitToken()) ?>">
                     <input type="hidden" name="category_id" value="<?= $categoryId ?>">
-                    <button class="btn btn-outline-danger">
+                    <button class="btn btn-outline-danger" <?= $drawLocked ? 'disabled' : '' ?>>
                         <i class="bi bi-trash"></i>
                         Supprimer toutes les poules de cette catégorie
                     </button>
                 </form>
+                <?php if ($drawLocked): ?>
+                    <p class="small text-muted mt-2 mb-0">
+                        Suppression verrouillée jusqu'à la fin de tous les matchs de l'après-midi.
+                    </p>
+                <?php endif; ?>
             </div>
         </div>
         <div class="row g-3">

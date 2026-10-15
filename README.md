@@ -136,10 +136,6 @@ assets/                  CSS
 - Pas de gestion de forfait automatique (à saisir manuellement en mettant un score et le
   statut "Terminé").
 - Pas d'import CSV des équipes : ajout un par un via le formulaire (facile à ajouter si besoin).
-- Le bouton *Supprimer toutes les poules* d'une catégorie n'est pas verrouillé : il efface poules
-  et matchs (matin et après-midi). À protéger de la même manière que le tirage si nécessaire.
-- Le PDF utilise des textes sans accents dans la section challenge et des médailles dessinées en
-  rectangles, selon les capacités de `SimplePdf`.
 - Le bandeau sponsors et les espaces publicitaires sont volontairement simples (logos +
   lien cliquable) ; des emplacements "Partenaire du match" pourraient être ajoutés en
   associant un sponsor à un match spécifique.
