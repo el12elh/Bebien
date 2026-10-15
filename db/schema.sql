@@ -131,9 +131,9 @@ CREATE TABLE IF NOT EXISTS settings (
 -- Paramètres par défaut du barème de points (modifiable dans l'admin,
 -- à ajuster précisément selon votre dossier sportif officiel)
 INSERT INTO settings (k, v) VALUES
-  ('points_victoire', '3'),
+  ('points_victoire', '4'),
   ('points_nul', '2'),
-  ('points_defaite', '1'),
+  ('points_defaite', '0'),
   ('points_forfait', '0'),
   ('bonus_offensif_actif', '0'),        -- 1 = activer un point bonus si écart d'essais >= seuil
   ('bonus_offensif_seuil_essais', '3'),
