@@ -272,7 +272,7 @@ foreach ($categories as $cat) {
                 $pdf->y += 10;
             }
             if ($hasPointsOffice) {
-                $pdf->text($pdf->margin, $pdf->y, "* 4 points et 2 essais attribues d'office.", 8, false, $navy);
+                $pdf->text($pdf->margin, $pdf->y, "* 4 points et 2 essais compensatoires attribués aux équipes de la poule incomplète.", 8, false, $navy);
                 $pdf->y += 14;
             }
         }
@@ -331,8 +331,8 @@ if ($show['challenge']) {
         }
         $pdf->y += 20;
         $note = $final['complete']
-            ? "Toutes categories confondues, d'apres les resultats de l'apres-midi."
-            : "Classement provisoire : tous les matchs de l'apres-midi ne sont pas termines.";
+            ? "Ce challenge récompensera le club ayant obtenu les meilleurs classements, toutes catégories confondues."
+            : "Classement provisoire : tous les matchs de l'après-midi ne sont pas terminés.";
         $pdf->text($pdf->margin, $pdf->y + 8, $note, 8);
         $pdf->y += 14;
         $header();

@@ -194,7 +194,7 @@ require_once __DIR__ . '/includes/public_nav.php';
     <?php endforeach; ?>
   </div>
   <?php if ($hasPointsOffice): ?>
-    <p class="text-muted mt-2"><strong>*</strong> 4 points et 2 essais attribués d'office.</p>
+    <p class="text-muted mt-2"><strong>*</strong> 4 points et 2 essais compensatoires attribués aux équipes de la poule incomplète.</p>
   <?php endif; ?>
   <?php else: ?>
   <h3 class="section-title">Classement final</h3>
@@ -203,10 +203,13 @@ require_once __DIR__ . '/includes/public_nav.php';
       $cats = $final['categories'];
     ?>
     <p class="text-muted">
-      Toutes catégories confondues, d'après les résultats de l'après-midi.
+      Ce challenge récompensera le club ayant obtenu les meilleurs classements, toutes catégories confondues.<br>
+      Pour chaque catégorie, le classement final sera multiplié par le coefficient correspondant.<br>
       <?php foreach ($cats as $cat): ?>
         <span class="badge badge-coef"><?= htmlspecialchars($cat['nom']) ?> ×<?= (int) $cat['coef'] ?></span>
-      <?php endforeach; ?>
+      <?php endforeach; ?><br>
+      Les résultats obtenus dans toutes les catégories seront ensuite additionnés.
+      Le club ayant le score total le plus faible remportera le challenge.
     </p>
     <?php if (!$final['complete']): ?>
       <div class="alert alert-warning py-2">
