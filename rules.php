@@ -121,7 +121,6 @@ require_once __DIR__ . '/includes/public_nav.php';
             <li><strong>Victoire :</strong> 4 points</li>
             <li><strong>Nul :</strong> 2 points</li>
             <li><strong>Défaite :</strong> 0 point</li>
-            <li>Dans une poule du matin comptant une équipe de moins que la poule la plus complète de la catégorie, chaque équipe reçoit une fois 4 points et 2 essais compensatoires.</li>
           </ul>
 
           <h6><strong>Arbitrage</strong></h6>
