@@ -158,6 +158,7 @@ if ($categoryId) {
                 WHEN club_team_counts.team_count > 1 THEN t.nom_equipe
                 ELSE ""
             END AS nom_equipe,
+            t.tete_serie,
             cl.nom_club,
             cl.logo_path AS club_logo_path
         FROM pool_teams pt
@@ -275,8 +276,8 @@ require_once __DIR__ . '/../includes/admin_nav.php';
                     </div>
                 </form>
                 <p class="small text-muted mt-2 mb-0">
-                    Le tirage est aléatoire et répartit équitablement les équipes
-                    entre les poules. Le calendrier des matchs et l'attribution
+                    Le tirage est aléatoire, répartit équitablement les équipes et
+                    équilibre les têtes de série entre les poules. Le calendrier des matchs et l'attribution
                     des terrains/horaires sont générés automatiquement.
                 </p>
                 <?php endif; ?>
@@ -317,7 +318,7 @@ require_once __DIR__ . '/../includes/admin_nav.php';
                                             style="height:24px; width:auto; object-fit:contain;"
                                         >
                                     <?php endif; ?>
-                                    <span><?= htmlspecialchars($t['nom_club']) ?> <small class="text-muted"><?= htmlspecialchars($t['nom_equipe']) ?></small></span>
+                                    <span><?= htmlspecialchars($t['nom_club']) ?> <small class="text-muted"><?= htmlspecialchars($t['nom_equipe']) ?></small><?= !empty($t['tete_serie']) ? ' ⭐' : '' ?></span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>

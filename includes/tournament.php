@@ -6,7 +6,7 @@ require_once __DIR__ . '/db.php';
  *  TIRAGE AU SORT DES POULES (phase matin)
  * ============================================================
  * Répartit aléatoirement les équipes d'une catégorie dans N poules,
- * en évitant qu'une même poule contienne deux équipes du même club.
+ * équilibre les têtes de série et évite si possible deux équipes du même club par poule.
  */
 function assignerEquipesParPoules(array $teams, array $poolIds): array {
     if (!$poolIds) {
@@ -25,14 +25,21 @@ function assignerEquipesParPoules(array $teams, array $poolIds): array {
 
     $maxAttempts = 500;
     for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-        shuffle($teams);
+        $seededTeams = array_values(array_filter($teams, static fn(array $team): bool => !empty($team['tete_serie'])));
+        $unseededTeams = array_values(array_filter($teams, static fn(array $team): bool => empty($team['tete_serie'])));
+        shuffle($seededTeams);
+        shuffle($unseededTeams);
+        $teamsToAssign = array_merge($seededTeams, $unseededTeams);
+
         $assign = [];
+        $seedCounts = [];
         foreach ($poolIds as $poolId) {
             $assign[$poolId] = [];
+            $seedCounts[$poolId] = 0;
         }
 
         $ok = true;
-        foreach ($teams as $team) {
+        foreach ($teamsToAssign as $team) {
             $eligiblePoolIds = [];
             foreach ($poolIds as $poolId) {
                 if (count($assign[$poolId]) >= $targetSizes[$poolId]) {
@@ -56,15 +63,16 @@ function assignerEquipesParPoules(array $teams, array $poolIds): array {
                 break;
             }
 
-            $minCount = min(array_map(function ($poolId) use ($assign) {
-                return count($assign[$poolId]);
-            }, $eligiblePoolIds));
-            $bestPoolIds = array_values(array_filter($eligiblePoolIds, function ($poolId) use ($assign, $minCount) {
-                return count($assign[$poolId]) === $minCount;
-            }));
+            $isSeeded = !empty($team['tete_serie']);
+            $counts = $isSeeded ? $seedCounts : array_map('count', $assign);
+            $minCount = min(array_map(static fn($poolId) => $counts[$poolId], $eligiblePoolIds));
+            $bestPoolIds = array_values(array_filter($eligiblePoolIds, static fn($poolId) => $counts[$poolId] === $minCount));
 
             $selectedPoolId = $bestPoolIds[array_rand($bestPoolIds)];
             $assign[$selectedPoolId][] = $team;
+            if ($isSeeded) {
+                $seedCounts[$selectedPoolId]++;
+            }
         }
 
         $sizesOk = true;
@@ -87,7 +95,7 @@ function tirerPoulesMatin(int $categoryId, int $nbPoules): array {
     $pdo = db();
 
     // Récupère les équipes de la catégorie
-    $stmt = $pdo->prepare('SELECT id, club_id FROM teams WHERE category_id = ?');
+    $stmt = $pdo->prepare('SELECT id, club_id, tete_serie FROM teams WHERE category_id = ?');
     $stmt->execute([$categoryId]);
     $teams = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
