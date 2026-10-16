@@ -1,7 +1,7 @@
 <?php
 /** @var string $pageTitle */
 $nomTournoi = getSetting('nom_tournoi');
-$logoTournoiPath = ltrim((string) getSetting('logo_tournoi_path', 'uploads/logo_tournoi.png'), '/');
+$logoTournoiPath = ltrim((string) getSetting('logo_tournoi_path', 'uploads/favicon.png'), '/');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
