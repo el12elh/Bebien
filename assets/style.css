@@ -84,11 +84,11 @@ h4, h5 { font-weight: 600; }
   text-decoration-thickness: 2px;
   text-underline-offset: 0.35rem;
 }
-.navbar-rugby .navbar-brand .site-logo { height: 42px; width: auto; object-fit: contain; }
+.navbar-rugby .navbar-brand .site-logo { height: 50px; width: auto; object-fit: contain; }
 .navbar-rugby .btn-outline-light { border-color: rgba(255, 255, 255, 0.55); }
 .navbar-rugby .btn-outline-light:hover { background: var(--site-accent); border-color: var(--site-accent); color: var(--site-primary); }
 @media (max-width: 576px) {
-  .navbar-rugby .navbar-brand .site-logo { height: 34px; }
+  .navbar-rugby .navbar-brand .site-logo { height: 40px; }
 }
 
 /* ---------- Cartes, formulaires, tableaux ---------- */
