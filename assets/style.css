@@ -368,7 +368,7 @@ h4, h5 { font-weight: 600; }
 
 .sponsor-strip { position: relative; overflow: hidden; background: var(--site-surface); border-top: 1px solid var(--site-line); border-bottom: 1px solid var(--site-line); padding: 10px 0; margin-bottom: 1.25rem; }
 .sponsor-strip:hover .sponsor-track { animation-play-state: paused; }
-.sponsor-track { display: flex; align-items: center; gap: 18px; padding-right: 18px; animation: scroll-left 30s linear infinite; width: max-content; }
+.sponsor-track { display: flex; align-items: center; gap: 18px; padding-right: 18px; animation: scroll-left 30s linear 1s infinite; width: max-content; }
 .sponsor-item { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
 .sponsor-strip .sponsor-track img { height: 45px !important; max-width: 140px !important; max-height: 45px !important; width: auto !important; object-fit: contain !important; }
 @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
