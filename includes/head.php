@@ -10,7 +10,9 @@ $logoTournoiPath = ltrim((string) getSetting('logo_tournoi_path', 'uploads/favic
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($pageTitle ?? $nomTournoi) ?> - <?= htmlspecialchars($nomTournoi) ?></title>
 <link rel="icon" type="image/png" href="/<?= htmlspecialchars($logoTournoiPath) ?>">
-<link rel="apple-touch-icon" href="/<?= htmlspecialchars($logoTournoiPath) ?>">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <meta name="theme-color" content="#213b70">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
