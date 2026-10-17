@@ -160,8 +160,7 @@ INSERT INTO settings (k, v) VALUES
   ('edition_tournoi', '26'),
   ('lieu_tournoi', 'Stade Albaladéjo'),
   ('ville_tournoi', 'Joué-lès-Tours'),
-  ('date_tournoi', '2026-10-18'),
-  ('logo_tournoi_path', 'uploads/logo.png')
+  ('date_tournoi', '2026-10-18')
 ON DUPLICATE KEY UPDATE v = v;
 
 -- Catégories par défaut

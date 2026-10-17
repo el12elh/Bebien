@@ -1,18 +1,38 @@
 <?php
 /** @var string $pageTitle */
 $nomTournoi = getSetting('nom_tournoi');
-$logoTournoiPath = ltrim((string) getSetting('logo_tournoi_path', 'uploads/favicon.png'), '/');
+$dateTournoi = getSetting('date_tournoi', '');
+if ($dateTournoi) {
+    $tournamentDeadline = new DateTime($dateTournoi . ' 13:00');
+    if (new DateTime() > $tournamentDeadline) {
+        $phase = 'aprem';
+    }
+    else {
+        $phase = 'matin';
+    }
+}
+$dateTournoi_formatted = $dateTournoi
+    ? (new IntlDateFormatter(
+        'fr_FR',
+        IntlDateFormatter::LONG,
+        IntlDateFormatter::NONE
+    ))->format(new DateTime($dateTournoi))
+    : '';
+$nomTournoi = getSetting('nom_tournoi');
+$numeroEdition = getSetting('edition_tournoi');
+$lieuTournoi = getSetting('lieu_tournoi');
+$villeTournoi = getSetting('ville_tournoi');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= htmlspecialchars($pageTitle ?? $nomTournoi) ?> - <?= htmlspecialchars($nomTournoi) ?></title>
-<link rel="icon" type="image/png" href="/<?= htmlspecialchars($logoTournoiPath) ?>">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-<link rel="icon" href="/assets/favicon.ico" sizes="any">
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<title>Bébien<?= $pageTitle !== null ? ' • ' . htmlspecialchars($pageTitle) : '' ?></title>
+<meta name="description" content="La <?= htmlspecialchars($numeroEdition) ?>e édition du <?= htmlspecialchars($nomTournoi) ?> se déroulera le <?= htmlspecialchars($dateTournoi_formatted) ?> au <?= htmlspecialchars($lieuTournoi) ?> à <?= htmlspecialchars($villeTournoi) ?>.">
+<link rel="icon" type="image/png" href="/assets/img/logo.png">
+<link rel="icon" href="/assets/img/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#213b70">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

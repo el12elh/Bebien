@@ -46,7 +46,7 @@ if (!empty($user['field_id'])) {
     $fieldName = $fieldStmt->fetchColumn();
 }
 
-$pageTitle = 'Espace Table de marque';
+$pageTitle = 'Table de marque';
 require_once __DIR__ . '/../includes/head.php';
 require_once __DIR__ . '/../includes/tdm_nav.php';
 ?>

@@ -21,7 +21,7 @@ require_once __DIR__ . '/includes/public_nav.php';
   <?php require_once __DIR__ . '/includes/sponsor_strip.php'; ?>
   <div class="row justify-content-center">
     <div class="col-lg-7">
-      <h2>Règlement</h2>
+      <h2>Règlement sportif</h2>
       <div class="card mb-4">
         <div class="card-body">
           <h6><strong>Horaires</strong></h6>

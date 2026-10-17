@@ -5,7 +5,7 @@ $user = currentUser();
 <nav class="navbar navbar-expand-lg navbar-rugby mb-4">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="/tdm">
-      <img src="/uploads/logo_header.png" alt="<?= htmlspecialchars(getSetting('nom_tournoi')) ?>" class="me-2 site-logo">
+      <img src="/assets/img/logo_header.png" alt="<?= htmlspecialchars(getSetting('nom_tournoi')) ?>" class="me-2 site-logo">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navTdm">
       <span class="navbar-toggler-icon"></span>

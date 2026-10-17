@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/public_nav.php';
   <div class="card mb-4">
     <div class="card-body text-center">
         <img
-          src="uploads/plan_tournoi.png"
+          src="assets/img/plan_tournoi.png"
           alt="Plan du site du tournoi avec les emplacements des terrains M8, M10, M12 et du village équipe"
           class="img-fluid"
         >

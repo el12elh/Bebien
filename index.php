@@ -31,6 +31,7 @@ $liveStmt = $pdo->query('SELECT m.*, c.nom cat_nom, p.nom pool_nom, f.nom field_
               WHERE m.status = "Live" ORDER BY m.scheduled_at, m.category_id, m.field_id');
 $live = $liveStmt->fetchAll();
 
+$activeFieldCount = (int) $pdo->query('SELECT COUNT(*) FROM fields WHERE actif = 1')->fetchColumn();
 $nextStmt = $pdo->query('SELECT m.*, c.nom cat_nom, p.nom pool_nom, f.nom field_nom,
               c1.nom_club c1, c1.logo_path AS club1_logo_path,
               CASE WHEN club_team_counts1.team_count > 1 THEN t1.nom_equipe ELSE "" END AS e1,
@@ -56,7 +57,7 @@ $nextStmt = $pdo->query('SELECT m.*, c.nom cat_nom, p.nom pool_nom, f.nom field_
               ) club_team_counts2 ON club_team_counts2.club_id = t2.club_id AND club_team_counts2.category_id = t2.category_id
               WHERE m.status = "Programmé"
               ORDER BY m.scheduled_at, m.category_id, m.field_id
-              LIMIT 12');
+              LIMIT ' . $activeFieldCount);
 $next = $nextStmt->fetchAll();
 
 $dateTournoi = getSetting('date_tournoi', '');
@@ -81,7 +82,6 @@ $numeroEdition = getSetting('edition_tournoi');
 $lieuTournoi = getSetting('lieu_tournoi');
 $villeTournoi = getSetting('ville_tournoi');
 
-$pageTitle = 'Accueil';
 require_once __DIR__ . '/includes/head.php';
 require_once __DIR__ . '/includes/public_nav.php';
 ?>
@@ -97,7 +97,10 @@ require_once __DIR__ . '/includes/public_nav.php';
       <br>
       <?php if ($lieuTournoi): ?><span class="ms-3"><i class="bi bi-geo-alt"></i><?= htmlspecialchars($lieuTournoi) ?>, <?= htmlspecialchars($villeTournoi) ?></span><?php endif; ?>
     </p>
-    <p class="hero-hint">Suivez les résultats et les classements en direct.</p>
+    <br>
+    <p class="hero-hint">Le <?= htmlspecialchars($nomTournoi) ?> est un tournoi annuel organisé par l'École de Rugby du club en hommage à Robert Bébien, ancien président du club durant vingt ans et figure emblématique de son développement.</p>
+    <p class="hero-hint">Cette journée réunira près de 600 enfants autour des valeurs fondamentales du sport et du rugby : le respect, le partage, l'engagement et la convivialité.</p>
+    <p class="hero-hint">Suivez les résultats et les classements ici.</p>
     <div class="d-flex justify-content-center gap-2 flex-wrap">
       <?php foreach ($categories as $c): ?>
         <a href="schedule?category_id=<?= $c['id'] ?>&phase=<?= $phase ?>" class="btn btn-outline-cat"><?= htmlspecialchars($c['nom']) ?></a>
