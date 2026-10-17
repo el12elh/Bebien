@@ -10,6 +10,7 @@ require_once __DIR__ . '/includes/head.php';
 require_once __DIR__ . '/includes/public_nav.php';
 ?>
 <div class="container">
+  <?php require_once __DIR__ . '/includes/sponsor_strip.php'; ?>
   <h2 class="page-title">Récapitulatif</h2>
   <form id="exportForm" class="card card-body mb-4" onsubmit="return false;">
     <div class="row g-3 align-items-end">
