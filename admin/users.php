@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $fields = $pdo->query('SELECT * FROM fields ORDER BY id')->fetchAll();
-$users = $pdo->query('SELECT * FROM users ORDER BY actif desc, role, username')->fetchAll();
+$users = $pdo->query('SELECT * FROM users ORDER BY actif desc, role, field_id, username')->fetchAll();
 $roleLabels = [
     'tdm' => 'TdM',
     'admin' => 'Admin'
