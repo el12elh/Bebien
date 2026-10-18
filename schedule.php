@@ -127,11 +127,13 @@ require_once __DIR__ . '/includes/public_nav.php';
                 <span class="<?= $winnerClass === 'winner-team-1' ? 'team-name winner-team' : '' ?> text-nowrap"><?= htmlspecialchars($m['c1']) ?><small class="text-muted"><?= htmlspecialchars($m['e1']) ?></small></span>
               </div>
               <?php if ($m['status'] === 'Programmé'): ?>
-                <span class="text-muted">vs</span>
+                <span class="vs-badge">VS</span>
               <?php else: ?>
-                <span class="fw-bold"><?= $m['score1'] ?? '-' ?></span>
-                <span class="text-muted">:</span>
-                <span class="fw-bold"><?= $m['score2'] ?? '-' ?></span>
+                <span class="score-pill">
+                  <span class="score-num <?= $winnerClass === 'winner-team-1' ? 'is-winner' : ($winnerClass === 'winner-team-2' ? 'is-loser' : '') ?>"><?= $score1 ?? '-' ?></span>
+                  <span class="score-sep">:</span>
+                  <span class="score-num <?= $winnerClass === 'winner-team-2' ? 'is-winner' : ($winnerClass === 'winner-team-1' ? 'is-loser' : '') ?>"><?= $score2 ?? '-' ?></span>
+                </span>
               <?php endif; ?>
               <div class="d-flex align-items-center gap-2">
                 <span class="<?= $winnerClass === 'winner-team-2' ? 'team-name winner-team' : '' ?> text-nowrap"><?= htmlspecialchars($m['c2']) ?><small class="text-muted"><?= htmlspecialchars($m['e2']) ?></small></span>
