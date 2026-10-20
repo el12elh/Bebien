@@ -98,8 +98,8 @@ require_once __DIR__ . '/includes/public_nav.php';
       <?php if ($lieuTournoi): ?><span class="ms-3"><i class="bi bi-geo-alt"></i><?= htmlspecialchars($lieuTournoi) ?>, <?= htmlspecialchars($villeTournoi) ?></span><?php endif; ?>
     </p>
     <br>
-    <p class="hero-hint">Le <?= htmlspecialchars($nomTournoi) ?> est un tournoi annuel organisé par l'École de Rugby du club en hommage à Robert Bébien, ancien président du club durant vingt ans et figure emblématique de son développement.</p>
-    <p class="hero-hint">Cette journée réunira près de 600 enfants autour des valeurs fondamentales du sport et du rugby : le respect, le partage, l'engagement et la convivialité.</p>
+    <p class="hero-hint">Le <?= htmlspecialchars($nomTournoi) ?> est un tournoi annuel organisé par l'École de Rugby du club en hommage à Robert Bébien, ancien président du club durant vingt ans et figure emblématique de son développement.
+    Il réunit près de 600 enfants autour des valeurs fondamentales du sport et du rugby : respect, partage, engagement et convivialité.</p>
     <p class="hero-hint">Suivez les résultats et les classements ici.</p>
     <div class="d-flex justify-content-center gap-2 flex-wrap">
       <?php foreach ($categories as $c): ?>
